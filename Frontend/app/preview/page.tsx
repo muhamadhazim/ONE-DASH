@@ -194,9 +194,9 @@ export default function PreviewPage() {
             <Link href="/link">Edit Links</Link>
           </Button>
           <Button className="bg-[#4A7DFF] hover:bg-[#3a6dee]" asChild>
-            <Link href="/u/demo" target="_blank">
+            <Link href="/link">
               <Eye className="h-4 w-4 mr-2" />
-              View Live Page
+              Edit Your Page
             </Link>
           </Button>
         </div>
