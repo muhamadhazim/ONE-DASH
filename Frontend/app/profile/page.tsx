@@ -380,27 +380,38 @@ export default function ProfilePage() {
               <ShieldAlert className="h-5 w-5 text-[#5DADE2]" />
               Konfirmasi Perubahan Profil
             </DialogTitle>
-            <DialogDescription className="pt-2 space-y-2">
-              <p>Anda akan mengubah informasi profil:</p>
-              {formData.username !== originalData.username && (
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Username:</span>{" "}
-                  <span className="line-through text-red-500">{originalData.username}</span>{" "}
-                  → <span className="text-green-600 font-medium">{formData.username}</span>
-                </p>
-              )}
-              {formData.email !== originalData.email && (
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Email:</span>{" "}
-                  <span className="line-through text-red-500">{originalData.email}</span>{" "}
-                  → <span className="text-green-600 font-medium">{formData.email}</span>
-                </p>
-              )}
-              <p className="text-amber-600 text-sm mt-3">
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-sm text-muted-foreground">Anda akan mengubah informasi profil:</p>
+            {formData.username !== originalData.username && (
+              <p className="text-sm">
+                <span className="text-muted-foreground">Username:</span>{" "}
+                <span className="line-through text-red-500">{originalData.username}</span>{" "}
+                → <span className="text-green-600 font-medium">{formData.username}</span>
+              </p>
+            )}
+            {formData.email !== originalData.email && (
+              <p className="text-sm">
+                <span className="text-muted-foreground">Email:</span>{" "}
+                <span className="line-through text-red-500">{originalData.email}</span>{" "}
+                → <span className="text-green-600 font-medium">{formData.email}</span>
+              </p>
+            )}
+            {/* Contextual warning */}
+            {formData.username !== originalData.username && formData.email !== originalData.email ? (
+              <p className="text-amber-600 text-sm bg-amber-50 p-2 rounded-lg">
+                ⚠️ Username adalah identitas link publik Anda dan email untuk login. Pastikan perubahan ini benar.
+              </p>
+            ) : formData.username !== originalData.username ? (
+              <p className="text-amber-600 text-sm bg-amber-50 p-2 rounded-lg">
                 ⚠️ Username adalah identitas link publik Anda. Pastikan perubahan ini benar.
               </p>
-            </DialogDescription>
-          </DialogHeader>
+            ) : (
+              <p className="text-amber-600 text-sm bg-amber-50 p-2 rounded-lg">
+                ⚠️ Email digunakan untuk login. Pastikan email baru valid.
+              </p>
+            )}
+          </div>
           <DialogFooter className="flex gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setShowProfileConfirm(false)}>
               Batal
