@@ -58,6 +58,7 @@ type Profile = {
   banner: string
   bannerColor: string
   theme?: string
+  backgroundImage?: string
   isVerified?: boolean
   socials: { type: string; url: string; id?: string }[]
   links: Product[]
@@ -240,7 +241,15 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
   const theme = getTheme(profile.theme)
 
   return (
-    <div className={`min-h-screen pb-safe ${theme.pageBackground}`}>
+    <div 
+      className={`min-h-screen pb-safe ${!profile.backgroundImage ? theme.pageBackground : ''}`}
+      style={profile.backgroundImage ? {
+        backgroundImage: `url(${profile.backgroundImage.startsWith('http') ? profile.backgroundImage : `${API_URL}${profile.backgroundImage}`})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      } : {}}
+    >
       {/* Header Banner - Responsive height */}
       <div
         className="relative h-28 sm:h-32 md:h-40"
@@ -293,7 +302,10 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
               </div>
             </div>
 
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 bg-[#FF6B35] rounded-full flex items-center justify-center border-2 sm:border-3 border-white shadow-md">
+            <div 
+              className="absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center border-2 sm:border-3 border-white shadow-md"
+              style={{ backgroundColor: theme.accent }}
+            >
               <Verified className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
             </div>
           </div>
@@ -321,7 +333,16 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackSocialClick(social.type)}
-                className="w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-[#FF6B35] hover:text-white active:scale-95 transition-all duration-300 shrink-0"
+                className="w-10 h-10 sm:w-9 sm:h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 active:scale-95 transition-all duration-300 shrink-0"
+                style={{ '--hover-bg': theme.accent } as React.CSSProperties}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = theme.accent
+                  e.currentTarget.style.color = 'white'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = ''
+                  e.currentTarget.style.color = ''
+                }}
               >
                 <Icon className="h-4 w-4 sm:h-4 sm:w-4" />
               </a>
@@ -335,7 +356,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
           }`}
         >
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-[#FF6B35]">
+            <div className="flex items-center justify-center gap-1" style={{ color: theme.accent }}>
               <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span className="font-bold text-sm sm:text-base">{profile.links.length}</span>
             </div>
@@ -384,9 +405,10 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-300 snap-start min-h-[40px] sm:min-h-0 ${
                   activeCategory === cat
-                    ? "bg-[#FF6B35] text-white shadow-md shadow-orange-200"
+                    ? "text-white shadow-md"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300"
                 }`}
+                style={activeCategory === cat ? { backgroundColor: theme.accent } : {}}
               >
                 {cat === "all" ? "Semua" : cat}
               </button>
@@ -476,7 +498,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
                       <div className="min-w-0">
                         {product.price ? (
                           <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
-                            <span className="text-base sm:text-lg font-bold text-[#FF6B35]">{formatPrice(product.price)}</span>
+                            <span className="text-base sm:text-lg font-bold" style={{ color: theme.accent }}>{formatPrice(product.price)}</span>
                             {product.originalPrice > 0 && (
                               <span className="text-[10px] sm:text-xs text-gray-400 line-through">
                                 {formatPrice(product.originalPrice)}
@@ -488,7 +510,10 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-1 bg-[#FF6B35] text-white px-3 sm:px-4 py-2 sm:py-1.5 rounded-lg text-xs font-semibold shadow-md shadow-orange-200 group-hover:bg-[#e85d2c] active:bg-[#d04d1c] transition-colors shrink-0">
+                      <div 
+                        className="flex items-center gap-1 text-white px-3 sm:px-4 py-2 sm:py-1.5 rounded-lg text-xs font-semibold shadow-md group-hover:brightness-90 active:brightness-75 transition-all shrink-0"
+                        style={{ backgroundColor: theme.accent }}
+                      >
                         <span>Beli</span>
                         <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                       </div>

@@ -8,18 +8,19 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
-	Email        string    `gorm:"not null;size:255" json:"email"`   // UNIQUE constraint exists in DB
-	Username     string    `gorm:"not null;size:50" json:"username"` // UNIQUE constraint exists in DB
-	PasswordHash string    `gorm:"not null;size:255" json:"-"`
-	DisplayName  string    `gorm:"size:100" json:"display_name"`
-	Location     string    `gorm:"size:100" json:"location"`
-	Bio          string    `gorm:"type:text" json:"bio"`
-	AvatarURL    string    `gorm:"size:500" json:"avatar_url"`
-	BannerURL    string    `gorm:"size:500" json:"banner_url"`
-	BannerColor  string    `gorm:"size:7;default:'#FF6B35'" json:"banner_color"`
-	Theme        string    `gorm:"size:50;default:'sunset'" json:"theme"`
-	IsVerified   bool      `gorm:"default:false" json:"is_verified"`
+	ID              uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	Email           string    `gorm:"not null;size:255" json:"email"`   // UNIQUE constraint exists in DB
+	Username        string    `gorm:"not null;size:50" json:"username"` // UNIQUE constraint exists in DB
+	PasswordHash    string    `gorm:"not null;size:255" json:"-"`
+	DisplayName     string    `gorm:"size:100" json:"display_name"`
+	Location        string    `gorm:"size:100" json:"location"`
+	Bio             string    `gorm:"type:text" json:"bio"`
+	AvatarURL       string    `gorm:"size:500" json:"avatar_url"`
+	BannerURL       string    `gorm:"size:500" json:"banner_url"`
+	BannerColor     string    `gorm:"size:7;default:'#FF6B35'" json:"banner_color"`
+	Theme           string    `gorm:"size:50;default:'sunset'" json:"theme"`
+	BackgroundImage string    `gorm:"size:500" json:"background_image"`
+	IsVerified      bool      `gorm:"default:false" json:"is_verified"`
 
 	// Counter columns for fast analytics
 	TotalViews  int64 `gorm:"default:0" json:"total_views"`

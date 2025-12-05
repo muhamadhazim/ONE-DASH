@@ -78,6 +78,7 @@ export default function LinkEditorPage() {
     avatar_url: "",
     banner_color: "#FF6B35",
     theme: "sunset" as ThemeId,
+    background_image: "",
   })
   
   const [links, setLinks] = useState<LinkItem[]>([])
@@ -117,6 +118,7 @@ export default function LinkEditorPage() {
           avatar_url: profileData.avatar_url || "",
           banner_color: profileData.banner_color || "#FF6B35",
           theme: profileData.theme || "sunset",
+          background_image: profileData.background_image || "",
         })
       }
 
@@ -325,6 +327,9 @@ export default function LinkEditorPage() {
     )
   }
 
+  // Get theme for live preview
+  const previewTheme = getTheme(profile.theme)
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50/50 via-white to-gray-50">
       <Navbar />
@@ -503,9 +508,82 @@ export default function LinkEditorPage() {
                 ))}
               </div>
               
-              <p className="text-xs text-gray-500 mt-3">
+              <p className="text-xs text-gray-500 mt-3 mb-4">
                 Theme will be applied to your public profile page
               </p>
+
+              {/* Custom Background Upload */}
+              <div className="border-t border-gray-100 pt-4">
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Custom Background</h3>
+                <div className="flex items-center gap-4">
+                  <div className="relative w-full">
+                    <input
+                      type="file"
+                      id="bg-upload"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+                        
+                        const formData = new FormData()
+                        formData.append('background', file)
+                        
+                        try {
+                          setSaving(true)
+                          const token = localStorage.getItem("token")
+                          const res = await fetch(`${API_URL}/api/profile/background`, {
+                            method: 'POST',
+                            headers: { Authorization: `Bearer ${token}` },
+                            body: formData,
+                          })
+                          
+                          if (res.ok) {
+                            const data = await res.json()
+                            setProfile({ ...profile, background_image: data.background_image })
+                            setMessage({ type: "success", text: "Background uploaded!" })
+                            setTimeout(() => setMessage({ type: "", text: "" }), 3000)
+                          } else {
+                            throw new Error("Failed to upload")
+                          }
+                        } catch (error) {
+                          setMessage({ type: "error", text: "Failed to upload background" })
+                        } finally {
+                          setSaving(false)
+                        }
+                      }}
+                    />
+                    <label 
+                      htmlFor="bg-upload"
+                      className="flex items-center justify-center gap-2 w-full p-3 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#FF6B35] hover:bg-orange-50 transition-all group"
+                    >
+                      <Camera className="h-5 w-5 text-gray-400 group-hover:text-[#FF6B35]" />
+                      <span className="text-sm text-gray-600 group-hover:text-[#FF6B35]">
+                        {profile.background_image ? "Change Background Image" : "Upload Background Image"}
+                      </span>
+                    </label>
+                  </div>
+                  
+                  {profile.background_image && (
+                    <div className="relative w-16 h-12 rounded-lg overflow-hidden border border-gray-200 shrink-0 group">
+                      <img 
+                        src={profile.background_image.startsWith('http') ? profile.background_image : `${API_URL}${profile.background_image}`} 
+                        alt="Background" 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        onClick={() => setProfile({ ...profile, background_image: "" })}
+                        className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 className="h-4 w-4 text-white" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Uploading a background image will override the theme background.
+                </p>
+              </div>
             </div>
 
             {/* Social Links Section */}
@@ -673,11 +751,11 @@ export default function LinkEditorPage() {
               </div>
               
               {/* Preview content */}
-              <div className="bg-gradient-to-b from-orange-50/50 via-white to-gray-50 min-h-[550px] overflow-y-auto max-h-[600px]">
+              <div className={`min-h-[550px] overflow-y-auto max-h-[600px] ${previewTheme.pageBackground}`}>
                 {/* Banner with pattern overlay */}
                 <div 
                   className="h-28 relative"
-                  style={{ background: `linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFB347 100%)` }}
+                  style={{ background: previewTheme.background }}
                 >
                   {/* Pattern Overlay */}
                   <div className="absolute inset-0 opacity-10">

@@ -18,12 +18,13 @@ func NewProfileService(userRepo *repository.UserRepository) *ProfileService {
 }
 
 type UpdateProfileInput struct {
-	Username    string `json:"username"`
-	DisplayName string `json:"display_name"`
-	Location    string `json:"location"`
-	Bio         string `json:"bio"`
-	BannerColor string `json:"banner_color"`
-	Theme       string `json:"theme"`
+	Username        string `json:"username"`
+	DisplayName     string `json:"display_name"`
+	Location        string `json:"location"`
+	Bio             string `json:"bio"`
+	BannerColor     string `json:"banner_color"`
+	Theme           string `json:"theme"`
+	BackgroundImage string `json:"background_image"`
 }
 
 func (s *ProfileService) GetProfile(userID uuid.UUID) (*models.User, error) {
@@ -61,6 +62,9 @@ func (s *ProfileService) UpdateProfile(userID uuid.UUID, input *UpdateProfileInp
 	if input.Theme != "" {
 		user.Theme = input.Theme
 	}
+	if input.BackgroundImage != "" {
+		user.BackgroundImage = input.BackgroundImage
+	}
 
 	if err := s.userRepo.Update(user); err != nil {
 		return nil, err
@@ -90,6 +94,20 @@ func (s *ProfileService) UpdateBanner(userID uuid.UUID, bannerURL string) (*mode
 	}
 
 	user.BannerURL = bannerURL
+	if err := s.userRepo.Update(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (s *ProfileService) UpdateBackgroundImage(userID uuid.UUID, imageURL string) (*models.User, error) {
+	user, err := s.userRepo.FindByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	user.BackgroundImage = imageURL
 	if err := s.userRepo.Update(user); err != nil {
 		return nil, err
 	}
