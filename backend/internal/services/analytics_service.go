@@ -161,3 +161,7 @@ func (s *AnalyticsService) GetDailyClicks(userID uuid.UUID, source, platform str
 func (s *AnalyticsService) GetTimelineClicksByGroup(userID uuid.UUID, timeGroup, groupBy, source, platform, category string, from, to time.Time) ([]repository.TimelineDataPoint, error) {
 	return s.analyticsRepo.GetTimelineClicksByGroup(userID, timeGroup, groupBy, source, platform, category, from, to)
 }
+
+func (s *AnalyticsService) GetEstimatedRevenue(userID uuid.UUID, from, to time.Time) (float64, error) {
+	return s.analyticsRepo.GetEstimatedRevenue(userID, from, to)
+}

@@ -43,6 +43,7 @@ func InitDB() (*gorm.DB, error) {
 		&models.LinkClick{},
 		&models.PageView{},
 		&models.SocialClick{},
+		&models.CommissionRate{},
 	); err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)
 	}

@@ -44,6 +44,7 @@ interface DashboardStats {
   clicks_by_platform: { source: string; count: number }[]
   clicks_by_category: { source: string; count: number }[]
   daily_clicks: { date: string; count: number }[]
+  estimated_revenue?: number
 }
 
 export default function DashboardPage() {
@@ -170,7 +171,13 @@ export default function DashboardPage() {
     { label: "Views", value: stats?.overview?.total_views?.toString() || "0", color: "#22c55e" },
     { label: "Clicks", value: stats?.overview?.total_clicks?.toString() || "0", color: "#3b82f6" },
     { label: "CVR", value: stats?.overview?.cvr ? `${stats.overview.cvr.toFixed(1)}%` : "0%", color: "#22c55e" },
-    { label: "Revenue", value: "-", color: "#f87171" },
+    { 
+      label: "Est. Revenue", 
+      value: stats?.estimated_revenue 
+        ? `Rp ${Math.round(stats.estimated_revenue).toLocaleString('id-ID')}` 
+        : "Rp 0", 
+      color: "#f87171" 
+    },
   ]
 
   // Prepare clicks by source data for pie chart

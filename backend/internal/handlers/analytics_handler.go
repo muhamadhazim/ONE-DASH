@@ -281,6 +281,13 @@ func (h *AnalyticsHandler) GetDashboardStats(c *fiber.Ctx) error {
 		})
 	}
 
+	// Get estimated revenue
+	estimatedRevenue, err := h.analyticsService.GetEstimatedRevenue(userID, from, to)
+	if err != nil {
+		// Log error but don't fail the request - revenue is optional
+		estimatedRevenue = 0
+	}
+
 	return c.JSON(fiber.Map{
 		"overview":           overview,
 		"top_links":          topLinks,
@@ -290,6 +297,7 @@ func (h *AnalyticsHandler) GetDashboardStats(c *fiber.Ctx) error {
 		"clicks_by_category": clicksByCategory,
 		"views_by_source":    viewsBySource,
 		"daily_clicks":       dailyClicks,
+		"estimated_revenue":  estimatedRevenue,
 	})
 }
 
