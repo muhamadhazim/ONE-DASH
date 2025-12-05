@@ -312,6 +312,18 @@ export default function LinkEditorPage() {
         }
       }
 
+      // Update localStorage with new avatar
+      const storedUser = localStorage.getItem("user")
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          userData.avatar_url = profile.avatar_url
+          localStorage.setItem("user", JSON.stringify(userData))
+        } catch (e) {
+          console.error("Failed to update localStorage", e)
+        }
+      }
+
       setMessage({ type: "success", text: "Saved successfully!" })
       setTimeout(() => setMessage({ type: "", text: "" }), 3000)
     } catch (error) {
@@ -791,10 +803,7 @@ export default function LinkEditorPage() {
                   </div>
 
                   <div className="absolute top-2 left-2 right-2 flex justify-between z-10">
-                    <div className="flex items-center gap-1 px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs">
-                      <Heart className="h-3 w-3" />
-                      2,847
-                    </div>
+
                     <div className="flex items-center gap-1 px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs">
                       <Share2 className="h-3 w-3" />
                       Share
@@ -819,7 +828,10 @@ export default function LinkEditorPage() {
                       </div>
                     </div>
                     <div className="absolute top-16 right-1/2 translate-x-8">
-                      <div className="w-5 h-5 bg-[#FF6B35] rounded-full flex items-center justify-center border-2 border-white">
+                      <div 
+                        className="w-5 h-5 rounded-full flex items-center justify-center border-2 border-white"
+                        style={{ backgroundColor: previewTheme.accent }}
+                      >
                         <Verified className="h-3 w-3 text-white" />
                       </div>
                     </div>
@@ -834,7 +846,7 @@ export default function LinkEditorPage() {
 
                   {/* Stats Card */}
                   <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 mb-3">
-                    <div className="flex items-center justify-center gap-2 text-[#FF6B35]">
+                    <div className="flex items-center justify-center gap-2" style={{ color: previewTheme.accent }}>
                       <ShoppingBag className="h-4 w-4" />
                       <span className="font-bold">{links.length}</span>
                       <span className="text-gray-500 text-sm">Products</span>
@@ -856,12 +868,15 @@ export default function LinkEditorPage() {
                   {/* Rekomendasi Produk Header */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded bg-[#FF6B35]/10 flex items-center justify-center">
-                        <ShoppingBag className="h-3 w-3 text-[#FF6B35]" />
+                      <div 
+                        className="w-5 h-5 rounded flex items-center justify-center"
+                        style={{ backgroundColor: `${previewTheme.accent}1A` }}
+                      >
+                        <ShoppingBag className="h-3 w-3" style={{ color: previewTheme.accent }} />
                       </div>
                       <span className="font-semibold text-gray-900 text-sm">Rekomendasi Produk</span>
                     </div>
-                    <span className="text-xs text-[#FF6B35]">{links.length} items</span>
+                    <span className="text-xs" style={{ color: previewTheme.accent }}>{links.length} items</span>
                   </div>
 
                   {/* Links preview */}
@@ -892,7 +907,7 @@ export default function LinkEditorPage() {
                                 </div>
                               )}
                               {link.price && (
-                                <p className="text-sm text-[#FF6B35] font-bold">{formatPrice(link.price)}</p>
+                                <p className="text-sm font-bold" style={{ color: previewTheme.accent }}>{formatPrice(link.price)}</p>
                               )}
                               <div className="flex items-center gap-1.5 mt-0.5">
                                 {link.category && (

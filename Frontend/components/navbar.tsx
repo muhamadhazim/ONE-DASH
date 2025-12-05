@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
@@ -18,6 +18,7 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn ?? false)
   const [username, setUsername] = useState("")
+  const [userAvatar, setUserAvatar] = useState("")
 
   useEffect(() => {
     // Check localStorage for auth state
@@ -29,8 +30,10 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
       try {
         const user = JSON.parse(userData)
         setUsername(user.username || "")
+        setUserAvatar(user.avatar_url || "")
       } catch {
         setUsername("")
+        setUserAvatar("")
       }
     } else {
       setIsLoggedIn(propIsLoggedIn ?? false)
@@ -89,6 +92,7 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
               <>
                 <Link href="/profile">
                   <Avatar className="h-9 w-9 sm:h-10 sm:w-10 bg-[#E07B54] transition-all duration-300 hover:scale-110 hover:ring-4 hover:ring-[#E07B54]/30 cursor-pointer">
+                    {userAvatar && <AvatarImage src={userAvatar.startsWith('http') ? userAvatar : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${userAvatar}`} alt={username} className="object-cover" />}
                     <AvatarFallback className="bg-[#E07B54] text-white font-semibold">
                       {username ? username.charAt(0).toUpperCase() : "U"}
                     </AvatarFallback>
@@ -160,6 +164,7 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
                 <div className="flex items-center justify-between px-4 py-2">
                   <Link href="/profile" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
                     <Avatar className="h-10 w-10 bg-[#E07B54]">
+                      {userAvatar && <AvatarImage src={userAvatar.startsWith('http') ? userAvatar : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${userAvatar}`} alt={username} className="object-cover" />}
                       <AvatarFallback className="bg-[#E07B54] text-white font-semibold">
                         {username ? username.charAt(0).toUpperCase() : "U"}
                       </AvatarFallback>
