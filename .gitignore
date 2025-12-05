@@ -8,6 +8,7 @@ Frontend/build/
 Frontend/.pnp
 Frontend/.pnp.js
 Frontend/coverage/
+Frontend/.env.local
 
 # ========================
 # BACKEND (Go)
@@ -25,13 +26,22 @@ backend/go.work
 backend/tmp/
 backend/temp/
 
+# Debug files
+backend/*_debug.html
+backend/*_debug.json
+
+# Uploads (jika tidak ingin commit file upload user)
+# backend/uploads/*
+# !backend/uploads/.gitkeep
+
 # ========================
 # ENVIRONMENT FILES
 # ========================
 .env
 .env.local
 .env.*.local
-*.env
+# KEEP .env.example for team reference!
+!.env.example
 
 # ========================
 # IDE & EDITORS
