@@ -76,6 +76,7 @@ export default function LinkEditorPage() {
     location: "",
     bio: "",
     avatar_url: "",
+    banner_url: "",
     banner_color: "#FF6B35",
     theme: "sunset" as ThemeId,
     background_image: "",
@@ -116,6 +117,7 @@ export default function LinkEditorPage() {
           location: profileData.location || "",
           bio: profileData.bio || "",
           avatar_url: profileData.avatar_url || "",
+          banner_url: profileData.banner_url || "",
           banner_color: profileData.banner_color || "#FF6B35",
           theme: profileData.theme || "sunset",
           background_image: profileData.background_image || "",
@@ -754,8 +756,12 @@ export default function LinkEditorPage() {
               <div className={`min-h-[550px] overflow-y-auto max-h-[600px] ${previewTheme.pageBackground}`}>
                 {/* Banner with pattern overlay */}
                 <div 
-                  className="h-28 relative"
-                  style={{ background: previewTheme.background }}
+                  className="h-28 relative bg-cover bg-center"
+                  style={{ 
+                    background: profile.banner_url 
+                      ? `url(${profile.banner_url.startsWith('http') ? profile.banner_url : `${API_URL}${profile.banner_url}`})` 
+                      : previewTheme.background 
+                  }}
                 >
                   {/* Pattern Overlay */}
                   <div className="absolute inset-0 opacity-10">

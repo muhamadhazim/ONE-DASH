@@ -252,9 +252,11 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
     >
       {/* Header Banner - Responsive height */}
       <div
-        className="relative h-28 sm:h-32 md:h-40"
+        className="relative h-28 sm:h-32 md:h-40 bg-cover bg-center"
         style={{
-          background: theme.background,
+          background: profile.banner 
+            ? `url(${profile.banner.startsWith('http') ? profile.banner : `${API_URL}${profile.banner}`})` 
+            : theme.background,
         }}
       >
         {/* Pattern Overlay */}
