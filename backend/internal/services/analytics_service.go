@@ -22,8 +22,8 @@ func NewAnalyticsService(analyticsRepo *repository.AnalyticsRepository, linkRepo
 	}
 }
 
-func (s *AnalyticsService) GetOverview(userID uuid.UUID) (*repository.OverviewStats, error) {
-	return s.analyticsRepo.GetOverviewStats(userID)
+func (s *AnalyticsService) GetOverview(userID uuid.UUID, from, to time.Time) (*repository.OverviewStats, error) {
+	return s.analyticsRepo.GetOverviewStats(userID, from, to)
 }
 
 func (s *AnalyticsService) GetClicks(userID uuid.UUID, from, to time.Time) ([]models.LinkClick, error) {

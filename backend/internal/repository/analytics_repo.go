@@ -70,16 +70,30 @@ type OverviewStats struct {
 	CVR         float64 `json:"cvr"` // Conversion rate
 }
 
-func (r *AnalyticsRepository) GetOverviewStats(userID uuid.UUID) (*OverviewStats, error) {
+func (r *AnalyticsRepository) GetOverviewStats(userID uuid.UUID, from, to time.Time) (*OverviewStats, error) {
 	stats := &OverviewStats{}
 
 	// Get total views
-	if err := r.db.Model(&models.PageView{}).Where("user_id = ?", userID).Count(&stats.TotalViews).Error; err != nil {
+	viewQuery := r.db.Model(&models.PageView{}).Where("user_id = ?", userID)
+	if !from.IsZero() {
+		viewQuery = viewQuery.Where("viewed_at >= ?", from)
+	}
+	if !to.IsZero() {
+		viewQuery = viewQuery.Where("viewed_at <= ?", to)
+	}
+	if err := viewQuery.Count(&stats.TotalViews).Error; err != nil {
 		return nil, err
 	}
 
 	// Get total clicks
-	if err := r.db.Model(&models.LinkClick{}).Where("user_id = ?", userID).Count(&stats.TotalClicks).Error; err != nil {
+	clickQuery := r.db.Model(&models.LinkClick{}).Where("user_id = ?", userID)
+	if !from.IsZero() {
+		clickQuery = clickQuery.Where("clicked_at >= ?", from)
+	}
+	if !to.IsZero() {
+		clickQuery = clickQuery.Where("clicked_at <= ?", to)
+	}
+	if err := clickQuery.Count(&stats.TotalClicks).Error; err != nil {
 		return nil, err
 	}
 

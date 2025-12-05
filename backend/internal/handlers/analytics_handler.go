@@ -24,7 +24,9 @@ func (h *AnalyticsHandler) GetOverview(c *fiber.Ctx) error {
 		return err
 	}
 
-	stats, err := h.analyticsService.GetOverview(userID)
+	// Pass zero times for lifetime stats
+	var zeroTime time.Time
+	stats, err := h.analyticsService.GetOverview(userID, zeroTime, zeroTime)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get analytics",
@@ -218,7 +220,7 @@ func (h *AnalyticsHandler) GetDashboardStats(c *fiber.Ctx) error {
 	}
 
 	// Get overview stats
-	overview, err := h.analyticsService.GetOverview(userID)
+	overview, err := h.analyticsService.GetOverview(userID, from, to)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get overview",
