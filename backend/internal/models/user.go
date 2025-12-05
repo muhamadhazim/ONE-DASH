@@ -9,8 +9,8 @@ import (
 
 type User struct {
 	ID           uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
-	Email        string    `gorm:"uniqueIndex;not null;size:255" json:"email"`
-	Username     string    `gorm:"uniqueIndex;not null;size:50" json:"username"`
+	Email        string    `gorm:"not null;size:255" json:"email"`   // UNIQUE constraint exists in DB
+	Username     string    `gorm:"not null;size:50" json:"username"` // UNIQUE constraint exists in DB
 	PasswordHash string    `gorm:"not null;size:255" json:"-"`
 	DisplayName  string    `gorm:"size:100" json:"display_name"`
 	Location     string    `gorm:"size:100" json:"location"`
