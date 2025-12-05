@@ -275,10 +275,14 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Lifetime Analytics Card - Responsive */}
+        {/* Analytics Card - Responsive */}
         <Card className="mb-6 sm:mb-8">
           <CardHeader className="text-center pb-2 px-3 sm:px-6">
-            <CardTitle className="text-lg sm:text-xl font-semibold text-[#1a365d]">Lifetime Analytics</CardTitle>
+            <CardTitle className="text-lg sm:text-xl font-semibold text-[#1a365d]">
+              {fromDate && toDate 
+                ? `Analitik: ${format(fromDate, 'd MMM')} - ${format(toDate, 'd MMM yyyy')}`
+                : 'Lifetime Analytics'}
+            </CardTitle>
           </CardHeader>
           <CardContent className="px-3 sm:px-6">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8 justify-center">
