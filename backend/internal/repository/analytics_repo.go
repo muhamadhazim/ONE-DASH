@@ -17,7 +17,46 @@ func NewAnalyticsRepository(db *gorm.DB) *AnalyticsRepository {
 	return &AnalyticsRepository{db: db}
 }
 
-// Link Clicks
+// Known values for "others" filter
+var (
+	knownSources    = []string{"instagram", "tiktok", "whatsapp", "facebook", "twitter", "youtube"}
+	knownPlatforms  = []string{"shopee", "tokopedia", "lazada", "tiktok_shop", "blibli"}
+	knownCategories = []string{"Fashion", "Electronics", "Beauty", "Home", "Food"}
+)
+
+// applySourceFilter adds source filter with "others" support
+func applySourceFilter(query *gorm.DB, column, source string) *gorm.DB {
+	if source == "" || source == "all" {
+		return query
+	}
+	if source == "others" {
+		return query.Where(column+" NOT IN ? OR "+column+" = 'direct' OR "+column+" = ''", knownSources)
+	}
+	return query.Where(column+" = ?", source)
+}
+
+// applyPlatformFilter adds platform filter with "others" support
+func applyPlatformFilter(query *gorm.DB, column, platform string) *gorm.DB {
+	if platform == "" || platform == "all" {
+		return query
+	}
+	if platform == "others" {
+		return query.Where(column+" NOT IN ? OR "+column+" = ''", knownPlatforms)
+	}
+	return query.Where(column+" = ?", platform)
+}
+
+// applyCategoryFilter adds category filter with "others" support
+func applyCategoryFilter(query *gorm.DB, column, category string) *gorm.DB {
+	if category == "" || category == "all" {
+		return query
+	}
+	if category == "Others" {
+		return query.Where(column+" NOT IN ? OR "+column+" = ''", knownCategories)
+	}
+	return query.Where(column+" = ?", category)
+}
+
 func (r *AnalyticsRepository) CreateClick(click *models.LinkClick) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// 1. Insert click record
@@ -200,15 +239,9 @@ func (r *AnalyticsRepository) GetFilteredTopLinks(userID uuid.UUID, source, plat
 		Joins("JOIN links ON links.id = link_clicks.link_id").
 		Where("link_clicks.user_id = ?", userID)
 
-	if source != "" && source != "all" {
-		query = query.Where("link_clicks.source = ?", source)
-	}
-	if platform != "" && platform != "all" {
-		query = query.Where("link_clicks.platform = ?", platform)
-	}
-	if category != "" && category != "all" {
-		query = query.Where("link_clicks.category = ?", category)
-	}
+	query = applySourceFilter(query, "link_clicks.source", source)
+	query = applyPlatformFilter(query, "link_clicks.platform", platform)
+	query = applyCategoryFilter(query, "link_clicks.category", category)
 	if !from.IsZero() {
 		query = query.Where("link_clicks.clicked_at >= ?", from)
 	}
@@ -237,12 +270,8 @@ func (r *AnalyticsRepository) GetClicksBySource(userID uuid.UUID, source, platfo
 		Where("user_id = ? AND source != ''", userID)
 
 	// Apply filters
-	if source != "" && source != "all" {
-		query = query.Where("source = ?", source)
-	}
-	if platform != "" && platform != "all" {
-		query = query.Where("platform = ?", platform)
-	}
+	query = applySourceFilter(query, "source", source)
+	query = applyPlatformFilter(query, "platform", platform)
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -263,12 +292,8 @@ func (r *AnalyticsRepository) GetClicksByPlatform(userID uuid.UUID, source, plat
 		Where("user_id = ? AND platform != ''", userID)
 
 	// Apply filters
-	if source != "" && source != "all" {
-		query = query.Where("source = ?", source)
-	}
-	if platform != "" && platform != "all" {
-		query = query.Where("platform = ?", platform)
-	}
+	query = applySourceFilter(query, "source", source)
+	query = applyPlatformFilter(query, "platform", platform)
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -289,12 +314,8 @@ func (r *AnalyticsRepository) GetClicksByCategory(userID uuid.UUID, source, plat
 		Where("user_id = ? AND category != ''", userID)
 
 	// Apply filters
-	if source != "" && source != "all" {
-		query = query.Where("source = ?", source)
-	}
-	if platform != "" && platform != "all" {
-		query = query.Where("platform = ?", platform)
-	}
+	query = applySourceFilter(query, "source", source)
+	query = applyPlatformFilter(query, "platform", platform)
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -333,12 +354,8 @@ func (r *AnalyticsRepository) GetDailyClicks(userID uuid.UUID, source, platform 
 		Where("user_id = ?", userID)
 
 	// Apply filters
-	if source != "" && source != "all" {
-		query = query.Where("source = ?", source)
-	}
-	if platform != "" && platform != "all" {
-		query = query.Where("platform = ?", platform)
-	}
+	query = applySourceFilter(query, "source", source)
+	query = applyPlatformFilter(query, "platform", platform)
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -390,15 +407,9 @@ func (r *AnalyticsRepository) GetTimelineClicksByGroup(userID uuid.UUID, timeGro
 		Where("user_id = ? AND "+groupColumn+" != ''", userID)
 
 	// Apply filters
-	if source != "" && source != "all" {
-		query = query.Where("source = ?", source)
-	}
-	if platform != "" && platform != "all" {
-		query = query.Where("platform = ?", platform)
-	}
-	if category != "" && category != "all" {
-		query = query.Where("category = ?", category)
-	}
+	query = applySourceFilter(query, "source", source)
+	query = applyPlatformFilter(query, "platform", platform)
+	query = applyCategoryFilter(query, "category", category)
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}

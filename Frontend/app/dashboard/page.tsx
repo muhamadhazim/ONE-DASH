@@ -373,6 +373,7 @@ export default function DashboardPage() {
                       <SelectItem value="facebook">Facebook</SelectItem>
                       <SelectItem value="twitter">Twitter</SelectItem>
                       <SelectItem value="youtube">Youtube</SelectItem>
+                      <SelectItem value="others">Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -390,6 +391,7 @@ export default function DashboardPage() {
                       <SelectItem value="lazada">Lazada</SelectItem>
                       <SelectItem value="tiktok_shop">Tiktok Shop</SelectItem>
                       <SelectItem value="blibli">Blibli</SelectItem>
+                      <SelectItem value="others">Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -407,6 +409,7 @@ export default function DashboardPage() {
                       <SelectItem value="Beauty">Beauty</SelectItem>
                       <SelectItem value="Home">Home</SelectItem>
                       <SelectItem value="Food">Food</SelectItem>
+                      <SelectItem value="Others">Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
