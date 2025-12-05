@@ -19,8 +19,13 @@ type User struct {
 	BannerURL    string    `gorm:"size:500" json:"banner_url"`
 	BannerColor  string    `gorm:"size:7;default:'#FF6B35'" json:"banner_color"`
 	IsVerified   bool      `gorm:"default:false" json:"is_verified"`
-	CreatedAt    time.Time `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt    time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+
+	// Counter columns for fast analytics
+	TotalViews  int64 `gorm:"default:0" json:"total_views"`
+	TotalClicks int64 `gorm:"default:0" json:"total_clicks"`
+
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
 	// Relationships
 	Contacts []Contact `gorm:"foreignKey:UserID" json:"contacts,omitempty"`

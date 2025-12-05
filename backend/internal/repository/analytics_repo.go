@@ -19,7 +19,19 @@ func NewAnalyticsRepository(db *gorm.DB) *AnalyticsRepository {
 
 // Link Clicks
 func (r *AnalyticsRepository) CreateClick(click *models.LinkClick) error {
-	return r.db.Create(click).Error
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		// 1. Insert click record
+		if err := tx.Create(click).Error; err != nil {
+			return err
+		}
+		// 2. Increment user's total_clicks counter
+		if err := tx.Model(&models.User{}).
+			Where("id = ?", click.UserID).
+			Update("total_clicks", gorm.Expr("total_clicks + 1")).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func (r *AnalyticsRepository) GetClicksByLinkID(linkID uuid.UUID, from, to time.Time) ([]models.LinkClick, error) {
@@ -48,7 +60,19 @@ func (r *AnalyticsRepository) CountClicksByLinkID(linkID uuid.UUID) (int64, erro
 
 // Page Views
 func (r *AnalyticsRepository) CreatePageView(view *models.PageView) error {
-	return r.db.Create(view).Error
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		// 1. Insert page view record
+		if err := tx.Create(view).Error; err != nil {
+			return err
+		}
+		// 2. Increment user's total_views counter
+		if err := tx.Model(&models.User{}).
+			Where("id = ?", view.UserID).
+			Update("total_views", gorm.Expr("total_views + 1")).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func (r *AnalyticsRepository) GetPageViewsByUserID(userID uuid.UUID, from, to time.Time) ([]models.PageView, error) {
