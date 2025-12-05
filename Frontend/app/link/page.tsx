@@ -400,7 +400,7 @@ export default function LinkEditorPage() {
                     </div>
                     <label 
                       htmlFor="avatar-upload" 
-                      className="absolute bottom-0 right-0 w-7 h-7 bg-[#FF6B35] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#E85A2A] transition-colors shadow-lg"
+                      className="absolute bottom-0 right-0 w-7 h-7 bg-[#FF6B35] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#E85A2A] transition-colors shadow-lg z-10"
                     >
                       <Camera className="h-3.5 w-3.5 text-white" />
                     </label>

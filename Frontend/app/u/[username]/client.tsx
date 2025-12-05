@@ -501,7 +501,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
                         {product.price ? (
                           <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
                             <span className="text-base sm:text-lg font-bold" style={{ color: theme.accent }}>{formatPrice(product.price)}</span>
-                            {product.originalPrice > 0 && (
+                            {product.originalPrice && product.originalPrice > 0 && (
                               <span className="text-[10px] sm:text-xs text-gray-400 line-through">
                                 {formatPrice(product.originalPrice)}
                               </span>
@@ -542,7 +542,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
         {/* Empty State */}
         {filteredLinks.length === 0 && (
           <div className="text-center py-12">
-            <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <ShoppingBag className="h-12 w-12 mx-auto mb-3" style={{ color: theme.accent }} />
             <p className="text-gray-500 text-sm">Tidak ada produk ditemukan</p>
           </div>
         )}
