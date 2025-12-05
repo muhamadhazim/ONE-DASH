@@ -11,8 +11,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { 
   Plus, Trash2, ExternalLink, Loader2, Check, AlertCircle, Eye, Save, RefreshCw,
   Mail, Phone, Instagram, Youtube, Github, Send, Music, MapPin, Camera, Link2,
-  Heart, Share2, Verified, ShoppingBag, Star
+  Heart, Share2, Verified, ShoppingBag, Star, Palette
 } from "lucide-react"
+import { themes, themeList, getTheme, type ThemeId } from "@/lib/themes"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
@@ -76,6 +77,7 @@ export default function LinkEditorPage() {
     bio: "",
     avatar_url: "",
     banner_color: "#FF6B35",
+    theme: "sunset" as ThemeId,
   })
   
   const [links, setLinks] = useState<LinkItem[]>([])
@@ -114,6 +116,7 @@ export default function LinkEditorPage() {
           bio: profileData.bio || "",
           avatar_url: profileData.avatar_url || "",
           banner_color: profileData.banner_color || "#FF6B35",
+          theme: profileData.theme || "sunset",
         })
       }
 
@@ -462,6 +465,47 @@ export default function LinkEditorPage() {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Theme Selector Section */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <Palette className="h-4 w-4 text-[#FF6B35]" />
+                Page Theme
+              </h2>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                {themeList.map((theme) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => setProfile({ ...profile, theme: theme.id })}
+                    className={`relative p-3 rounded-xl border-2 transition-all ${
+                      profile.theme === theme.id 
+                        ? "border-[#FF6B35] ring-2 ring-[#FF6B35]/20" 
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    {/* Theme Preview */}
+                    <div 
+                      className="w-full h-12 rounded-lg mb-2"
+                      style={{ background: theme.background }}
+                    />
+                    <div className="text-center">
+                      <span className="text-lg">{theme.emoji}</span>
+                      <p className="text-xs font-medium text-gray-700 mt-1 truncate">{theme.name}</p>
+                    </div>
+                    {profile.theme === theme.id && (
+                      <div className="absolute top-1 right-1 w-5 h-5 bg-[#FF6B35] rounded-full flex items-center justify-center">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+              
+              <p className="text-xs text-gray-500 mt-3">
+                Theme will be applied to your public profile page
+              </p>
             </div>
 
             {/* Social Links Section */}

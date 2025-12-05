@@ -37,6 +37,7 @@ type PublicProfileResponse struct {
 	Avatar      string              `json:"avatar"`
 	Banner      string              `json:"banner"`
 	BannerColor string              `json:"banner_color"`
+	Theme       string              `json:"theme"`
 	IsVerified  bool                `json:"is_verified"`
 	Socials     []SocialResponse    `json:"socials"`
 	Links       []LinkResponse      `json:"links"`
@@ -158,6 +159,7 @@ func (h *PublicHandler) GetPublicProfile(c *fiber.Ctx) error {
 		Avatar:      user.AvatarURL,
 		Banner:      user.BannerURL,
 		BannerColor: user.BannerColor,
+		Theme:       user.Theme,
 		IsVerified:  user.IsVerified,
 		Socials:     socials,
 		Links:       linkResponses,

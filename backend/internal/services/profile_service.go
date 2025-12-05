@@ -23,6 +23,7 @@ type UpdateProfileInput struct {
 	Location    string `json:"location"`
 	Bio         string `json:"bio"`
 	BannerColor string `json:"banner_color"`
+	Theme       string `json:"theme"`
 }
 
 func (s *ProfileService) GetProfile(userID uuid.UUID) (*models.User, error) {
@@ -56,6 +57,9 @@ func (s *ProfileService) UpdateProfile(userID uuid.UUID, input *UpdateProfileInp
 	}
 	if input.BannerColor != "" {
 		user.BannerColor = input.BannerColor
+	}
+	if input.Theme != "" {
+		user.Theme = input.Theme
 	}
 
 	if err := s.userRepo.Update(user); err != nil {

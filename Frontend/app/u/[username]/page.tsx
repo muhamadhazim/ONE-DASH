@@ -13,6 +13,7 @@ interface ProfileData {
   avatar: string
   banner: string
   banner_color: string
+  theme?: string
   is_verified: boolean
   socials: { type: string; url: string }[]
   links: {
@@ -153,6 +154,7 @@ export default async function PublicProfilePage({
       avatar: apiProfile.avatar || "",
       banner: apiProfile.banner || "",
       bannerColor: apiProfile.banner_color || "#5DADE2",
+      theme: apiProfile.theme || "sunset",
       isVerified: apiProfile.is_verified || false,
       categories: apiProfile.categories || [],
       socials: apiProfile.socials || [],

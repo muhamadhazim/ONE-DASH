@@ -18,6 +18,7 @@ type User struct {
 	AvatarURL    string    `gorm:"size:500" json:"avatar_url"`
 	BannerURL    string    `gorm:"size:500" json:"banner_url"`
 	BannerColor  string    `gorm:"size:7;default:'#FF6B35'" json:"banner_color"`
+	Theme        string    `gorm:"size:50;default:'sunset'" json:"theme"`
 	IsVerified   bool      `gorm:"default:false" json:"is_verified"`
 
 	// Counter columns for fast analytics

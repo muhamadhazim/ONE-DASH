@@ -31,6 +31,7 @@ import {
   Percent,
   Search,
 } from "lucide-react"
+import { getTheme } from "@/lib/themes"
 
 type Product = {
   id?: string
@@ -56,6 +57,7 @@ type Profile = {
   avatar: string
   banner: string
   bannerColor: string
+  theme?: string
   isVerified?: boolean
   socials: { type: string; url: string; id?: string }[]
   links: Product[]
@@ -234,13 +236,16 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
 
   const categories = ["all", ...(profile.categories || [])]
 
+  // Get the theme configuration
+  const theme = getTheme(profile.theme)
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50/50 via-white to-gray-50 pb-safe">
+    <div className={`min-h-screen pb-safe ${theme.pageBackground}`}>
       {/* Header Banner - Responsive height */}
       <div
         className="relative h-28 sm:h-32 md:h-40"
         style={{
-          background: `linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFB347 100%)`,
+          background: theme.background,
         }}
       >
         {/* Pattern Overlay */}
