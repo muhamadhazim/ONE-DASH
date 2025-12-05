@@ -377,7 +377,18 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
             placeholder="Cari produk..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 sm:h-10 pl-10 pr-4 rounded-xl bg-white border border-gray-200 text-sm focus:outline-none focus:border-[#FF6B35] focus:ring-2 focus:ring-[#FF6B35]/20 transition-all"
+            className="w-full h-11 sm:h-10 pl-10 pr-4 rounded-xl bg-white border border-gray-200 text-sm focus:outline-none transition-all"
+            style={{ 
+              caretColor: theme.accent,
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = theme.accent
+              e.target.style.boxShadow = `0 0 0 2px ${theme.accent}33`
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = ''
+              e.target.style.boxShadow = ''
+            }}
           />
         </div>
 
@@ -387,10 +398,16 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
           }`}
         >
           <div className="flex items-center gap-2">
-            <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-[#FF6B35]" />
+            <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: theme.accent }} />
             <h2 className="font-bold text-gray-900 text-sm sm:text-base">Rekomendasi Produk</h2>
           </div>
-          <span className="text-[10px] sm:text-xs bg-[#FF6B35]/10 text-[#FF6B35] px-2 py-0.5 rounded-full font-medium">
+          <span 
+            className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium"
+            style={{ 
+              backgroundColor: `${theme.accent}1A`, // 10% opacity
+              color: theme.accent 
+            }}
+          >
             {filteredLinks.length} items
           </span>
         </div>
@@ -431,7 +448,15 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
               }`}
               style={{ transitionDelay: `${300 + index * 75}ms` }}
             >
-              <div className="relative bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-orange-200 active:scale-[0.98]">
+              <div 
+                className="relative bg-white rounded-xl sm:rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg active:scale-[0.98]"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = theme.accent + '4D' // 30% opacity
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = ''
+                }}
+              >
                 {/* Marketplace Badge - Top Right Corner of Card */}
                 {(() => {
                   const marketplace = detectMarketplace(product.url)
@@ -477,7 +502,11 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
                   {/* Product Info */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-xs sm:text-sm leading-tight mb-1 line-clamp-2 group-hover:text-[#FF6B35] transition-colors">
+                      <h3 
+                        className="font-semibold text-gray-900 text-xs sm:text-sm leading-tight mb-1 line-clamp-2 transition-colors"
+                        onMouseEnter={(e) => e.currentTarget.style.color = theme.accent}
+                        onMouseLeave={(e) => e.currentTarget.style.color = ''}
+                      >
                         {product.title}
                       </h3>
                       {/* Rating and Sold */}
