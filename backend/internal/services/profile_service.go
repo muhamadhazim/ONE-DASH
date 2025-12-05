@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 
 	"github.com/onedash/backend/internal/models"
@@ -16,6 +18,7 @@ func NewProfileService(userRepo *repository.UserRepository) *ProfileService {
 }
 
 type UpdateProfileInput struct {
+	Username    string `json:"username"`
 	DisplayName string `json:"display_name"`
 	Location    string `json:"location"`
 	Bio         string `json:"bio"`
@@ -30,6 +33,16 @@ func (s *ProfileService) UpdateProfile(userID uuid.UUID, input *UpdateProfileInp
 	user, err := s.userRepo.FindByID(userID)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check if username is being changed
+	if input.Username != "" && input.Username != user.Username {
+		// Check if new username already exists
+		existingUser, err := s.userRepo.FindByUsername(input.Username)
+		if err == nil && existingUser.ID != userID {
+			return nil, fmt.Errorf("username '%s' sudah digunakan", input.Username)
+		}
+		user.Username = input.Username
 	}
 
 	if input.DisplayName != "" {
