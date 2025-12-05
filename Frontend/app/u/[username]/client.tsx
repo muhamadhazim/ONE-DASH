@@ -159,8 +159,6 @@ function detectMarketplace(url: string): string | null {
 export default function PublicProfileClient({ profile }: { profile: Profile }) {
   const [copiedLink, setCopiedLink] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const [likeCount, setLikeCount] = useState(2847)
-  const [liked, setLiked] = useState(false)
   const [activeCategory, setActiveCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [source, setSource] = useState("direct")
@@ -226,15 +224,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
     }
   }
 
-  const handleLike = () => {
-    if (!liked) {
-      setLikeCount((prev) => prev + 1)
-      setLiked(true)
-    } else {
-      setLikeCount((prev) => prev - 1)
-      setLiked(false)
-    }
-  }
+
 
   const filteredLinks = profile.links.filter((link) => {
     const matchesCategory = activeCategory === "all" || link.category === activeCategory
@@ -263,17 +253,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
           />
         </div>
 
-        <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex justify-between items-center z-10">
-          <button
-            onClick={handleLike}
-            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-1.5 rounded-full backdrop-blur-md transition-all duration-300 min-h-[44px] sm:min-h-0 ${
-              liked ? "bg-white text-red-500" : "bg-white/20 text-white hover:bg-white/30 active:bg-white/40"
-            }`}
-          >
-            <Heart className={`h-5 w-5 sm:h-4 sm:w-4 ${liked ? "fill-red-500" : ""}`} />
-            <span className="text-sm font-medium">{likeCount.toLocaleString()}</span>
-          </button>
-
+        <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex justify-end items-center z-10">
           <button
             onClick={handleShare}
             className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-1.5 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 active:bg-white/40 transition-all duration-300 min-h-[44px] sm:min-h-0"
