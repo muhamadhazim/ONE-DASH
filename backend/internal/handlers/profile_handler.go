@@ -125,39 +125,3 @@ func (h *ProfileHandler) UploadBanner(c *fiber.Ctx) error {
 
 	return c.JSON(profile)
 }
-
-func (h *ProfileHandler) UploadBackgroundImage(c *fiber.Ctx) error {
-	userID, err := middleware.GetUserID(c)
-	if err != nil {
-		return err
-	}
-
-	// Get file from form
-	file, err := c.FormFile("background")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Background image file is required",
-		})
-	}
-
-	// Save file to uploads folder
-	filename := userID.String() + "_bg_" + file.Filename
-	uploadPath := "./uploads/backgrounds/" + filename
-
-	if err := c.SaveFile(file, uploadPath); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to save background image",
-		})
-	}
-
-	// Update user background image URL
-	imageURL := "/uploads/backgrounds/" + filename
-	profile, err := h.profileService.UpdateBackgroundImage(userID, imageURL)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	return c.JSON(profile)
-}

@@ -29,21 +29,21 @@ func NewPublicHandler(
 }
 
 type PublicProfileResponse struct {
-	UserID          string              `json:"user_id"`
-	Name            string              `json:"name"`
-	Username        string              `json:"username"`
-	Location        string              `json:"location"`
-	Bio             string              `json:"bio"`
-	Avatar          string              `json:"avatar"`
-	Banner          string              `json:"banner"`
-	BannerColor     string              `json:"banner_color"`
-	Theme           string              `json:"theme"`
-	BackgroundImage string              `json:"background_image"`
-	IsVerified      bool                `json:"is_verified"`
-	Socials         []SocialResponse    `json:"socials"`
-	Links           []LinkResponse      `json:"links"`
-	Categories      []string            `json:"categories"`
-	Stats           PublicStatsResponse `json:"stats"`
+	UserID      string `json:"user_id"`
+	Name        string `json:"name"`
+	Username    string `json:"username"`
+	Location    string `json:"location"`
+	Bio         string `json:"bio"`
+	Avatar      string `json:"avatar"`
+	Banner      string `json:"banner"`
+	BannerColor string `json:"banner_color"`
+	Theme       string `json:"theme"`
+
+	IsVerified bool                `json:"is_verified"`
+	Socials    []SocialResponse    `json:"socials"`
+	Links      []LinkResponse      `json:"links"`
+	Categories []string            `json:"categories"`
+	Stats      PublicStatsResponse `json:"stats"`
 }
 
 type SocialResponse struct {
@@ -152,20 +152,20 @@ func (h *PublicHandler) GetPublicProfile(c *fiber.Ctx) error {
 	clickCount, _ := h.analyticsRepo.CountClicksByUserID(user.ID)
 
 	response := PublicProfileResponse{
-		UserID:          user.ID.String(),
-		Name:            user.DisplayName,
-		Username:        user.Username,
-		Location:        user.Location,
-		Bio:             user.Bio,
-		Avatar:          user.AvatarURL,
-		Banner:          user.BannerURL,
-		BannerColor:     user.BannerColor,
-		Theme:           user.Theme,
-		BackgroundImage: user.BackgroundImage,
-		IsVerified:      user.IsVerified,
-		Socials:         socials,
-		Links:           linkResponses,
-		Categories:      categories,
+		UserID:      user.ID.String(),
+		Name:        user.DisplayName,
+		Username:    user.Username,
+		Location:    user.Location,
+		Bio:         user.Bio,
+		Avatar:      user.AvatarURL,
+		Banner:      user.BannerURL,
+		BannerColor: user.BannerColor,
+		Theme:       user.Theme,
+
+		IsVerified: user.IsVerified,
+		Socials:    socials,
+		Links:      linkResponses,
+		Categories: categories,
 		Stats: PublicStatsResponse{
 			Products:  len(links),
 			Purchased: formatNumber(clickCount),

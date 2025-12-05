@@ -79,7 +79,7 @@ export default function LinkEditorPage() {
     banner_url: "",
     banner_color: "#FF6B35",
     theme: "sunset" as ThemeId,
-    background_image: "",
+
   })
   
   const [links, setLinks] = useState<LinkItem[]>([])
@@ -120,7 +120,7 @@ export default function LinkEditorPage() {
           banner_url: profileData.banner_url || "",
           banner_color: profileData.banner_color || "#FF6B35",
           theme: profileData.theme || "sunset",
-          background_image: profileData.background_image || "",
+
         })
       }
 
@@ -439,9 +439,97 @@ export default function LinkEditorPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-700">Profile Photo</p>
-                    <p className="text-xs text-gray-500">Click the camera icon to upload</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">Profile Photo</p>
+                        <p className="text-xs text-gray-500">Recommended: 500x500px</p>
+                      </div>
+                      {profile.avatar_url && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setProfile({ ...profile, avatar_url: "" })}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
+                </div>
+
+                {/* Banner Upload */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Banner Image</label>
+                    {profile.banner_url && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setProfile({ ...profile, banner_url: "" })}
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50 h-6 w-6 p-0"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="relative h-32 rounded-xl bg-gray-100 overflow-hidden border-2 border-dashed border-gray-300 hover:border-[#FF6B35] transition-colors group">
+                    {profile.banner_url ? (
+                      <img 
+                        src={profile.banner_url.startsWith('http') ? profile.banner_url : `${API_URL}${profile.banner_url}`} 
+                        alt="Banner" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                        <Camera className="h-8 w-8 mb-2" />
+                        <span className="text-xs">Upload Banner</span>
+                      </div>
+                    )}
+                    
+                    <label 
+                      htmlFor="banner-upload" 
+                      className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 cursor-pointer transition-colors"
+                    >
+                      <div className="bg-white/90 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                        <Camera className="h-4 w-4 text-gray-700" />
+                      </div>
+                    </label>
+                    <input
+                      id="banner-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+                        
+                        const formData = new FormData()
+                        formData.append('banner', file)
+                        
+                        try {
+                          const token = localStorage.getItem("token")
+                          const res = await fetch(`${API_URL}/api/profile/banner`, {
+                            method: 'POST',
+                            headers: { Authorization: `Bearer ${token}` },
+                            body: formData,
+                          })
+                          
+                          if (res.ok) {
+                            const data = await res.json()
+                            setProfile({ ...profile, banner_url: data.banner_url })
+                            setMessage({ type: "success", text: "Banner uploaded!" })
+                            setTimeout(() => setMessage({ type: "", text: "" }), 2000)
+                          } else {
+                            throw new Error("Upload failed")
+                          }
+                        } catch (error) {
+                          setMessage({ type: "error", text: "Failed to upload banner" })
+                        }
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">Recommended: 1500x500px</p>
                 </div>
 
                 <div>
@@ -513,80 +601,9 @@ export default function LinkEditorPage() {
               <p className="text-xs text-gray-500 mt-3 mb-4">
                 Theme will be applied to your public profile page
               </p>
-
-              {/* Custom Background Upload */}
-              <div className="border-t border-gray-100 pt-4">
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Custom Background</h3>
-                <div className="flex items-center gap-4">
-                  <div className="relative w-full">
-                    <input
-                      type="file"
-                      id="bg-upload"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0]
-                        if (!file) return
-                        
-                        const formData = new FormData()
-                        formData.append('background', file)
-                        
-                        try {
-                          setSaving(true)
-                          const token = localStorage.getItem("token")
-                          const res = await fetch(`${API_URL}/api/profile/background`, {
-                            method: 'POST',
-                            headers: { Authorization: `Bearer ${token}` },
-                            body: formData,
-                          })
-                          
-                          if (res.ok) {
-                            const data = await res.json()
-                            setProfile({ ...profile, background_image: data.background_image })
-                            setMessage({ type: "success", text: "Background uploaded!" })
-                            setTimeout(() => setMessage({ type: "", text: "" }), 3000)
-                          } else {
-                            throw new Error("Failed to upload")
-                          }
-                        } catch (error) {
-                          setMessage({ type: "error", text: "Failed to upload background" })
-                        } finally {
-                          setSaving(false)
-                        }
-                      }}
-                    />
-                    <label 
-                      htmlFor="bg-upload"
-                      className="flex items-center justify-center gap-2 w-full p-3 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#FF6B35] hover:bg-orange-50 transition-all group"
-                    >
-                      <Camera className="h-5 w-5 text-gray-400 group-hover:text-[#FF6B35]" />
-                      <span className="text-sm text-gray-600 group-hover:text-[#FF6B35]">
-                        {profile.background_image ? "Change Background Image" : "Upload Background Image"}
-                      </span>
-                    </label>
-                  </div>
-                  
-                  {profile.background_image && (
-                    <div className="relative w-16 h-12 rounded-lg overflow-hidden border border-gray-200 shrink-0 group">
-                      <img 
-                        src={profile.background_image.startsWith('http') ? profile.background_image : `${API_URL}${profile.background_image}`} 
-                        alt="Background" 
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        onClick={() => setProfile({ ...profile, background_image: "" })}
-                        className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="h-4 w-4 text-white" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Uploading a background image will override the theme background.
-                </p>
-              </div>
             </div>
+
+
 
             {/* Social Links Section */}
             <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">

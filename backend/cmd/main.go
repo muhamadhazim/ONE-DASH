@@ -95,7 +95,6 @@ func main() {
 	protected.Put("profile", profileHandler.UpdateProfile)
 	protected.Post("profile/avatar", profileHandler.UploadAvatar)
 	protected.Post("profile/banner", profileHandler.UploadBanner)
-	protected.Post("profile/background", profileHandler.UploadBackgroundImage)
 
 	// Contacts routes
 	protected.Get("contacts", contactHandler.GetContacts)

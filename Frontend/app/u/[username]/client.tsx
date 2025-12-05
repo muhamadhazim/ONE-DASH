@@ -58,7 +58,7 @@ type Profile = {
   banner: string
   bannerColor: string
   theme?: string
-  backgroundImage?: string
+
   isVerified?: boolean
   socials: { type: string; url: string; id?: string }[]
   links: Product[]
@@ -242,13 +242,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
 
   return (
     <div 
-      className={`min-h-screen pb-safe ${!profile.backgroundImage ? theme.pageBackground : ''}`}
-      style={profile.backgroundImage ? {
-        backgroundImage: `url(${profile.backgroundImage.startsWith('http') ? profile.backgroundImage : `${API_URL}${profile.backgroundImage}`})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      } : {}}
+      className={`min-h-screen pb-safe ${theme.pageBackground}`}
     >
       {/* Header Banner - Responsive height */}
       <div
@@ -399,7 +393,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
         >
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: theme.accent }} />
-            <h2 className="font-bold text-gray-900 text-sm sm:text-base">Rekomendasi Produk</h2>
+            <h2 className={`font-bold text-sm sm:text-base ${theme.textPrimary}`}>Rekomendasi Produk</h2>
           </div>
           <span 
             className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium"
@@ -577,25 +571,34 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
         )}
 
         <div
-          className={`mt-5 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl sm:rounded-2xl border border-orange-100 transition-all duration-500 delay-500 ${
+          className={`mt-5 sm:mt-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-500 delay-500 ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
+          style={{ 
+            background: `linear-gradient(to right, ${theme.accent}0D, ${theme.accent}1A)`, // 5% to 10% opacity
+            borderColor: `${theme.accent}33` // 20% opacity
+          }}
         >
           <div className="flex items-start gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FF6B35]/10 flex items-center justify-center shrink-0">
-              <Verified className="h-4 w-4 sm:h-5 sm:w-5 text-[#FF6B35]" />
+            <div 
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0"
+              style={{ backgroundColor: `${theme.accent}1A` }}
+            >
+              <Verified className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: theme.accent }} />
             </div>
             <div className="min-w-0">
-              <h4 className="font-semibold text-gray-900 text-xs sm:text-sm mb-0.5 sm:mb-1">
+              <h4 
+                className="font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1"
+                style={{ color: theme.accent }}
+              >
                 Trusted Affiliate Partner
               </h4>
-              <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed">
+              <p className={`text-[10px] sm:text-xs leading-relaxed ${theme.textSecondary}`}>
                 Semua link produk sudah diverifikasi dan aman. Dapatkan harga terbaik langsung dari seller terpercaya.
               </p>
             </div>
           </div>
         </div>
-
         <div
           className={`mt-6 sm:mt-8 text-center transition-all duration-500 delay-600 ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -603,7 +606,10 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
         >
           <Link
             href="/"
-            className="inline-flex items-center gap-1 px-4 py-2.5 sm:py-2 rounded-full bg-white border border-gray-200 hover:border-[#FF6B35] hover:shadow-md active:scale-95 transition-all duration-300"
+            className="inline-flex items-center gap-1 px-4 py-2.5 sm:py-2 rounded-full bg-white border border-gray-200 hover:shadow-md active:scale-95 transition-all duration-300"
+            style={{ borderColor: 'transparent' }}
+            onMouseEnter={(e) => e.currentTarget.style.borderColor = theme.accent}
+            onMouseLeave={(e) => e.currentTarget.style.borderColor = ''}
           >
             <span className="text-[#5DADE2] font-bold">One</span>
             <span className="text-gray-600 font-medium">Dash</span>
