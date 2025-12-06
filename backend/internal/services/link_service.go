@@ -64,6 +64,10 @@ func (s *LinkService) GetLinks(userID uuid.UUID) ([]models.Link, error) {
 // detectPlatform detects marketplace platform from URL
 func detectPlatform(url string) string {
 	u := strings.ToLower(url)
+	// Check TikTok first because it might contain 'tokopedia' in domain (e.g. vt.tokopedia.com)
+	if strings.Contains(u, "tiktok") || strings.Contains(u, "vt.tokopedia.com") || strings.Contains(u, "shop-id.tokopedia.com") {
+		return "tiktokshop"
+	}
 	if strings.Contains(u, "shopee") || strings.Contains(u, "shp.ee") {
 		return "shopee"
 	}
@@ -76,8 +80,8 @@ func detectPlatform(url string) string {
 	if strings.Contains(u, "bukalapak") {
 		return "bukalapak"
 	}
-	if strings.Contains(u, "tiktok") {
-		return "tiktok"
+	if strings.Contains(u, "blibli") {
+		return "blibli"
 	}
 	return "others"
 }

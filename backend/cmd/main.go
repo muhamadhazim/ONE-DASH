@@ -14,6 +14,7 @@ import (
 	"github.com/onedash/backend/internal/middleware"
 	"github.com/onedash/backend/internal/repository"
 	"github.com/onedash/backend/internal/services"
+	"github.com/onedash/backend/internal/services/scraper"
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 	profileService := services.NewProfileService(userRepo)
 	contactService := services.NewContactService(contactRepo)
 	linkService := services.NewLinkService(linkRepo)
-	scraperService := services.NewScraperService()
+	scraperService := scraper.NewService(db)
 	analyticsService := services.NewAnalyticsService(analyticsRepo, linkRepo)
 
 	// Initialize handlers

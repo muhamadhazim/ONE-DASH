@@ -135,6 +135,18 @@ const marketplaceConfig: Record<string, { name: string; logo: string; bg: string
     bg: "bg-black",
     textColor: "text-white",
   },
+  tiktokshop: {
+    name: "TikTok Shop",
+    logo: "🎵",
+    bg: "bg-black",
+    textColor: "text-white",
+  },
+  blibli: {
+    name: "Blibli",
+    logo: "💙",
+    bg: "bg-[#0095DA]",
+    textColor: "text-white",
+  },
   lazada: {
     name: "Lazada",
     logo: "💜",
@@ -151,11 +163,12 @@ const marketplaceConfig: Record<string, { name: string; logo: string; bg: string
 
 function detectMarketplace(url: string): string | null {
   const lowerUrl = url.toLowerCase()
+  if (lowerUrl.includes("tiktok") || lowerUrl.includes("vt.tokopedia.com") || lowerUrl.includes("shop-id.tokopedia.com")) return "tiktokshop"
   if (lowerUrl.includes("shopee") || lowerUrl.includes("shp.ee")) return "shopee"
   if (lowerUrl.includes("tokopedia") || lowerUrl.includes("tokped")) return "tokopedia"
-  if (lowerUrl.includes("tiktok")) return "tiktok"
   if (lowerUrl.includes("lazada")) return "lazada"
   if (lowerUrl.includes("bukalapak")) return "bukalapak"
+  if (lowerUrl.includes("blibli")) return "blibli"
   return null
 }
 
@@ -245,14 +258,22 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
       className={`min-h-screen pb-safe ${theme.pageBackground}`}
     >
       {/* Header Banner - Responsive height */}
-      <div
-        className="relative h-28 sm:h-32 md:h-40 bg-cover bg-center"
-        style={{
-          background: profile.banner 
-            ? `url(${profile.banner.startsWith('http') ? profile.banner : `${API_URL}${profile.banner}`})` 
-            : theme.background,
-        }}
-      >
+      <div className="relative h-28 sm:h-32 md:h-40 overflow-hidden">
+        {profile.banner ? (
+          <Image
+            src={profile.banner.startsWith('http') ? profile.banner : `${API_URL}${profile.banner}`}
+            alt="Profile Banner"
+            fill
+            priority
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+        ) : (
+          <div 
+            className="absolute inset-0" 
+            style={{ background: theme.background }} 
+          />
+        )}
         {/* Pattern Overlay */}
         <div className="absolute inset-0 opacity-10">
           <div
@@ -285,10 +306,13 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-white shadow-xl">
               <div className="w-full h-full rounded-full overflow-hidden bg-gray-100">
                 {profile.avatar ? (
-                  <img
+                  <Image
                     src={profile.avatar.startsWith('http') ? profile.avatar : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${profile.avatar}`}
                     alt={profile.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 96px, 112px"
+                    className="object-cover"
+                    priority
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold">
@@ -453,7 +477,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
               >
                 {/* Marketplace Badge - Top Right Corner of Card */}
                 {(() => {
-                  const marketplace = detectMarketplace(product.url)
+                  const marketplace = product.platform || detectMarketplace(product.url)
                   if (marketplace && marketplaceConfig[marketplace]) {
                     const config = marketplaceConfig[marketplace]
                     return (
@@ -524,7 +548,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
                         {product.price ? (
                           <div className="flex items-baseline gap-1.5 sm:gap-2 flex-wrap">
                             <span className="text-base sm:text-lg font-bold" style={{ color: theme.accent }}>{formatPrice(product.price)}</span>
-                            {product.originalPrice && product.originalPrice > 0 && (
+                            {product.originalPrice != null && product.originalPrice > 0 && (
                               <span className="text-[10px] sm:text-xs text-gray-400 line-through">
                                 {formatPrice(product.originalPrice)}
                               </span>

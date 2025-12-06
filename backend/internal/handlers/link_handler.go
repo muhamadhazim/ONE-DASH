@@ -6,14 +6,15 @@ import (
 
 	"github.com/onedash/backend/internal/middleware"
 	"github.com/onedash/backend/internal/services"
+	"github.com/onedash/backend/internal/services/scraper"
 )
 
 type LinkHandler struct {
 	linkService    *services.LinkService
-	scraperService *services.ScraperService
+	scraperService *scraper.Service
 }
 
-func NewLinkHandler(linkService *services.LinkService, scraperService *services.ScraperService) *LinkHandler {
+func NewLinkHandler(linkService *services.LinkService, scraperService *scraper.Service) *LinkHandler {
 	return &LinkHandler{
 		linkService:    linkService,
 		scraperService: scraperService,

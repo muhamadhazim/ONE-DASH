@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/onedash/backend/internal/repository"
@@ -194,5 +196,5 @@ func formatFloat(f float64) string {
 }
 
 func formatInt(n int64) string {
-	return string(rune('0' + n%10))
+	return strconv.FormatInt(n, 10)
 }
