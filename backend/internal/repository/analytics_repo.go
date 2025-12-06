@@ -4,59 +4,21 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
-
 	"github.com/onedash/backend/internal/models"
+	"gorm.io/gorm"
 )
 
+// AnalyticsRepository handles all analytics-related database operations
 type AnalyticsRepository struct {
 	db *gorm.DB
 }
 
+// NewAnalyticsRepository creates a new analytics repository
 func NewAnalyticsRepository(db *gorm.DB) *AnalyticsRepository {
 	return &AnalyticsRepository{db: db}
 }
 
-// Known values for "others" filter
-var (
-	knownSources    = []string{"instagram", "tiktok", "whatsapp", "facebook", "twitter", "youtube"}
-	knownPlatforms  = []string{"shopee", "tokopedia", "lazada", "tiktok_shop", "blibli"}
-	knownCategories = []string{"Fashion", "Electronics", "Beauty", "Home", "Food"}
-)
-
-// applySourceFilter adds source filter with "others" support
-func applySourceFilter(query *gorm.DB, column, source string) *gorm.DB {
-	if source == "" || source == "all" {
-		return query
-	}
-	if source == "others" {
-		return query.Where(column+" NOT IN ? OR "+column+" = 'direct' OR "+column+" = ''", knownSources)
-	}
-	return query.Where(column+" = ?", source)
-}
-
-// applyPlatformFilter adds platform filter with "others" support
-func applyPlatformFilter(query *gorm.DB, column, platform string) *gorm.DB {
-	if platform == "" || platform == "all" {
-		return query
-	}
-	if platform == "others" {
-		return query.Where(column+" NOT IN ? OR "+column+" = ''", knownPlatforms)
-	}
-	return query.Where(column+" = ?", platform)
-}
-
-// applyCategoryFilter adds category filter with "others" support
-func applyCategoryFilter(query *gorm.DB, column, category string) *gorm.DB {
-	if category == "" || category == "all" {
-		return query
-	}
-	if category == "Others" {
-		return query.Where(column+" NOT IN ? OR "+column+" = ''", knownCategories)
-	}
-	return query.Where(column+" = ?", category)
-}
-
+// Link Clicks
 func (r *AnalyticsRepository) CreateClick(click *models.LinkClick) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		// 1. Insert click record
@@ -242,6 +204,7 @@ func (r *AnalyticsRepository) GetFilteredTopLinks(userID uuid.UUID, source, plat
 	query = applySourceFilter(query, "link_clicks.source", source)
 	query = applyPlatformFilter(query, "link_clicks.platform", platform)
 	query = applyCategoryFilter(query, "link_clicks.category", category)
+
 	if !from.IsZero() {
 		query = query.Where("link_clicks.clicked_at >= ?", from)
 	}
@@ -272,6 +235,7 @@ func (r *AnalyticsRepository) GetClicksBySource(userID uuid.UUID, source, platfo
 	// Apply filters
 	query = applySourceFilter(query, "source", source)
 	query = applyPlatformFilter(query, "platform", platform)
+
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -294,6 +258,7 @@ func (r *AnalyticsRepository) GetClicksByPlatform(userID uuid.UUID, source, plat
 	// Apply filters
 	query = applySourceFilter(query, "source", source)
 	query = applyPlatformFilter(query, "platform", platform)
+
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -316,6 +281,7 @@ func (r *AnalyticsRepository) GetClicksByCategory(userID uuid.UUID, source, plat
 	// Apply filters
 	query = applySourceFilter(query, "source", source)
 	query = applyPlatformFilter(query, "platform", platform)
+
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -356,6 +322,7 @@ func (r *AnalyticsRepository) GetDailyClicks(userID uuid.UUID, source, platform 
 	// Apply filters
 	query = applySourceFilter(query, "source", source)
 	query = applyPlatformFilter(query, "platform", platform)
+
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -376,9 +343,6 @@ type TimelineDataPoint struct {
 	Count int64  `json:"count"`
 }
 
-// GetTimelineClicksByGroup returns clicks grouped by time period and source/platform
-// timeGroup: "daily", "weekly", "monthly"
-// groupBy: "source", "platform"
 // GetTimelineClicksByGroup returns clicks grouped by time period and source/platform
 // timeGroup: "daily", "weekly", "monthly"
 // groupBy: "source", "platform"
@@ -410,6 +374,7 @@ func (r *AnalyticsRepository) GetTimelineClicksByGroup(userID uuid.UUID, timeGro
 	query = applySourceFilter(query, "source", source)
 	query = applyPlatformFilter(query, "platform", platform)
 	query = applyCategoryFilter(query, "category", category)
+
 	if !from.IsZero() {
 		query = query.Where("clicked_at >= ?", from)
 	}
@@ -505,4 +470,44 @@ func (r *AnalyticsRepository) GetEstimatedRevenue(userID uuid.UUID, from, to tim
 	}
 
 	return totalRevenue, nil
+}
+
+// Known values for "others" filter
+var (
+	knownSources    = []string{"instagram", "tiktok", "whatsapp", "facebook", "twitter", "youtube"}
+	knownPlatforms  = []string{"shopee", "tokopedia", "lazada", "tiktok_shop", "blibli"}
+	knownCategories = []string{"Fashion", "Electronics", "Beauty", "Home", "Food"}
+)
+
+// applySourceFilter adds source filter with "others" support
+func applySourceFilter(query *gorm.DB, column, source string) *gorm.DB {
+	if source == "" || source == "all" {
+		return query
+	}
+	if source == "others" {
+		return query.Where(column+" NOT IN ? OR "+column+" = 'direct' OR "+column+" = ''", knownSources)
+	}
+	return query.Where(column+" = ?", source)
+}
+
+// applyPlatformFilter adds platform filter with "others" support
+func applyPlatformFilter(query *gorm.DB, column, platform string) *gorm.DB {
+	if platform == "" || platform == "all" {
+		return query
+	}
+	if platform == "others" {
+		return query.Where(column+" NOT IN ? OR "+column+" = ''", knownPlatforms)
+	}
+	return query.Where(column+" = ?", platform)
+}
+
+// applyCategoryFilter adds category filter with "others" support
+func applyCategoryFilter(query *gorm.DB, column, category string) *gorm.DB {
+	if category == "" || category == "all" {
+		return query
+	}
+	if category == "Others" {
+		return query.Where(column+" NOT IN ? OR "+column+" = ''", knownCategories)
+	}
+	return query.Where(column+" = ?", category)
 }
