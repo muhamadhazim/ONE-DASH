@@ -1,6 +1,7 @@
 package scraper
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
 	"io"
@@ -64,20 +65,63 @@ func (s *Service) scrapeLazada(productURL string) (*ProductMetadata, error) {
 	sold := s.extractLazadaSold(htmlContent)
 	category := s.detectCategory(title)
 
-	// If we got no data, try original URL
-	if title == "" {
+	// Fallback: Try to extract from __moduleData__ if rating or sold is missing
+	if rating == 0 || sold == 0 {
+		mRating, mSold := s.extractLazadaModuleData(htmlContent)
+		if rating == 0 {
+			rating = mRating
+		}
+		if sold == 0 {
+			sold = mSold
+		}
+	}
+
+	// If we got no data, or missing rating/sold, try with Desktop User-Agent
+	if title == "" || rating == 0 || sold == 0 {
 		req2, _ := http.NewRequest("GET", originalURL, nil)
-		req2.Header.Set("User-Agent", "facebookexternalhit/1.1;line-poker/1.0")
+		// Use Desktop User-Agent to get full page content
+		req2.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+		req2.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
+		req2.Header.Set("Accept-Language", "en-US,en;q=0.5")
+
 		resp2, err2 := s.client.Do(req2)
 		if err2 == nil {
 			defer resp2.Body.Close()
-			bodyBytes2 := make([]byte, 500000)
-			n2, _ := resp2.Body.Read(bodyBytes2)
-			htmlContent2 := string(bodyBytes2[:n2])
-			title = s.extractMetaContent(htmlContent2, "og:title")
-			title = html.UnescapeString(title)
+			bodyBytes2, _ := io.ReadAll(resp2.Body) // Read full body
+			htmlContent2 := string(bodyBytes2)
+
+			// Extract only if we missed them before
+			if title == "" {
+				title = s.extractMetaContent(htmlContent2, "og:title")
+				title = strings.TrimSuffix(title, " | Lazada Indonesia")
+				title = html.UnescapeString(title)
+			}
 			if imageURL == "" {
 				imageURL = s.extractMetaContent(htmlContent2, "og:image")
+			}
+			if price == 0 {
+				price = s.extractLazadaPrice(htmlContent2)
+			}
+			if rating == 0 {
+				rating = s.extractLazadaRating(htmlContent2)
+			}
+			if sold == 0 {
+				sold = s.extractLazadaSold(htmlContent2)
+			}
+
+			// Try module extraction if still missing
+			if rating == 0 || sold == 0 {
+				mRating, mSold := s.extractLazadaModuleData(htmlContent2)
+				if rating == 0 {
+					rating = mRating
+				}
+				if sold == 0 {
+					sold = mSold
+				}
+			}
+
+			if category == "" {
+				category = s.detectCategory(title)
 			}
 		}
 	}
@@ -275,4 +319,61 @@ func (s *Service) extractLazadaSold(html string) int {
 	}
 
 	return 0
+}
+
+func (s *Service) extractLazadaModuleData(html string) (float64, int) {
+	// Regex to find: app.run(__moduleData__, ...
+	// Matches `__moduleData__ = { ... };` or passed in app.run
+	re := regexp.MustCompile(`(?s)__moduleData__\s*=\s*(\{.*?\});`)
+	matches := re.FindStringSubmatch(html)
+
+	if len(matches) < 2 {
+		return 0, 0
+	}
+
+	jsonStr := matches[1]
+	var data map[string]interface{}
+	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
+		return 0, 0
+	}
+
+	var rating float64
+	var sold int
+
+	// Traverse: data -> root -> fields -> (review or rating)
+	if d, ok := data["data"].(map[string]interface{}); ok {
+		if root, ok := d["root"].(map[string]interface{}); ok {
+			if fields, ok := root["fields"].(map[string]interface{}); ok {
+
+				// Try rating from "review" structure
+				if review, ok := fields["review"].(map[string]interface{}); ok {
+					if val, ok := review["averageRating"].(float64); ok {
+						rating = val
+					} else if valStr, ok := review["averageRating"].(string); ok {
+						fmt.Sscanf(valStr, "%f", &rating)
+					}
+				}
+
+				// Try rating from "rating" structure
+				if rating == 0 {
+					if rObj, ok := fields["rating"].(map[string]interface{}); ok {
+						if val, ok := rObj["averageRating"].(float64); ok {
+							rating = val
+						}
+					}
+				}
+
+				// Try sold/reviews count
+				if review, ok := fields["review"].(map[string]interface{}); ok {
+					if total, ok := review["total"].(float64); ok {
+						sold = int(total)
+					} else if totalStr, ok := review["total"].(string); ok {
+						fmt.Sscanf(totalStr, "%d", &sold)
+					}
+				}
+			}
+		}
+	}
+
+	return rating, sold
 }

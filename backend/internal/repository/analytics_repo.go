@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"time"
+
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -12,6 +15,45 @@ type AnalyticsRepository struct {
 // NewAnalyticsRepository creates a new analytics repository
 func NewAnalyticsRepository(db *gorm.DB) *AnalyticsRepository {
 	return &AnalyticsRepository{db: db}
+}
+
+// FilterParams constructs the common parameters for analytics filtering
+type FilterParams struct {
+	UserID   uuid.UUID
+	Source   string
+	Platform string
+	Category string
+	From     time.Time
+	To       time.Time
+}
+
+// applyAnalyticsFilters applies all common filters to the query
+func applyAnalyticsFilters(query *gorm.DB, params FilterParams, tablePrefix string) *gorm.DB {
+	// Handle table prefix if provided (e.g. "link_clicks.")
+	sourceCol := "source"
+	platformCol := "platform"
+	categoryCol := "category"
+	dateCol := "clicked_at"
+
+	if tablePrefix != "" {
+		sourceCol = tablePrefix + sourceCol
+		platformCol = tablePrefix + platformCol
+		categoryCol = tablePrefix + categoryCol
+		dateCol = tablePrefix + dateCol
+	}
+
+	query = query.Where(tablePrefix+"user_id = ?", params.UserID)
+	query = applySourceFilter(query, sourceCol, params.Source)
+	query = applyPlatformFilter(query, platformCol, params.Platform)
+	query = applyCategoryFilter(query, categoryCol, params.Category)
+
+	if !params.From.IsZero() {
+		query = query.Where(dateCol+" >= ?", params.From)
+	}
+	if !params.To.IsZero() {
+		query = query.Where(dateCol+" <= ?", params.To)
+	}
+	return query
 }
 
 // Known values for "others" filter

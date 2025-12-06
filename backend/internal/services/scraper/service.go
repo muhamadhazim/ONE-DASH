@@ -108,6 +108,9 @@ func (s *Service) detectPlatform(productURL string) string {
 	if strings.Contains(productURL, "tokopedia.com") || strings.Contains(productURL, "tk.tokopedia.com") {
 		return "tokopedia"
 	}
+	if strings.Contains(productURL, "lazada.co.id") || strings.Contains(productURL, "lazada.com") || strings.Contains(productURL, "s.lazada.co.id") {
+		return "lazada"
+	}
 	return "generic"
 }
 

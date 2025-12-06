@@ -78,18 +78,17 @@ func (r *AnalyticsRepository) GetFilteredTopLinks(userID uuid.UUID, source, plat
 
 	query := r.db.Table("link_clicks").
 		Select("link_clicks.link_id, links.title, COUNT(*) as clicks").
-		Joins("JOIN links ON links.id = link_clicks.link_id").
-		Where("link_clicks.user_id = ?", userID)
+		Joins("JOIN links ON links.id = link_clicks.link_id")
 
-	query = applySourceFilter(query, "link_clicks.source", source)
-	query = applyPlatformFilter(query, "link_clicks.platform", platform)
-	query = applyCategoryFilter(query, "link_clicks.category", category)
-	if !from.IsZero() {
-		query = query.Where("link_clicks.clicked_at >= ?", from)
+	params := FilterParams{
+		UserID:   userID,
+		Source:   source,
+		Platform: platform,
+		Category: category,
+		From:     from,
+		To:       to,
 	}
-	if !to.IsZero() {
-		query = query.Where("link_clicks.clicked_at <= ?", to)
-	}
+	query = applyAnalyticsFilters(query, params, "link_clicks.")
 
 	err := query.Group("link_clicks.link_id, links.title").
 		Order("clicks DESC").
@@ -109,17 +108,16 @@ func (r *AnalyticsRepository) GetClicksBySource(userID uuid.UUID, source, platfo
 	var stats []SourceStat
 	query := r.db.Model(&models.LinkClick{}).
 		Select("source, COUNT(*) as count").
-		Where("user_id = ? AND source != ''", userID)
+		Where("source != ''")
 
-	// Apply filters
-	query = applySourceFilter(query, "source", source)
-	query = applyPlatformFilter(query, "platform", platform)
-	if !from.IsZero() {
-		query = query.Where("clicked_at >= ?", from)
+	params := FilterParams{
+		UserID:   userID,
+		Source:   source,
+		Platform: platform,
+		From:     from,
+		To:       to,
 	}
-	if !to.IsZero() {
-		query = query.Where("clicked_at <= ?", to)
-	}
+	query = applyAnalyticsFilters(query, params, "")
 
 	err := query.Group("source").
 		Order("count DESC").
@@ -131,17 +129,16 @@ func (r *AnalyticsRepository) GetClicksByPlatform(userID uuid.UUID, source, plat
 	var stats []SourceStat
 	query := r.db.Model(&models.LinkClick{}).
 		Select("platform as source, COUNT(*) as count").
-		Where("user_id = ? AND platform != ''", userID)
+		Where("platform != ''")
 
-	// Apply filters
-	query = applySourceFilter(query, "source", source)
-	query = applyPlatformFilter(query, "platform", platform)
-	if !from.IsZero() {
-		query = query.Where("clicked_at >= ?", from)
+	params := FilterParams{
+		UserID:   userID,
+		Source:   source,
+		Platform: platform,
+		From:     from,
+		To:       to,
 	}
-	if !to.IsZero() {
-		query = query.Where("clicked_at <= ?", to)
-	}
+	query = applyAnalyticsFilters(query, params, "")
 
 	err := query.Group("platform").
 		Order("count DESC").
@@ -153,17 +150,16 @@ func (r *AnalyticsRepository) GetClicksByCategory(userID uuid.UUID, source, plat
 	var stats []SourceStat
 	query := r.db.Model(&models.LinkClick{}).
 		Select("category as source, COUNT(*) as count").
-		Where("user_id = ? AND category != ''", userID)
+		Where("category != ''")
 
-	// Apply filters
-	query = applySourceFilter(query, "source", source)
-	query = applyPlatformFilter(query, "platform", platform)
-	if !from.IsZero() {
-		query = query.Where("clicked_at >= ?", from)
+	params := FilterParams{
+		UserID:   userID,
+		Source:   source,
+		Platform: platform,
+		From:     from,
+		To:       to,
 	}
-	if !to.IsZero() {
-		query = query.Where("clicked_at <= ?", to)
-	}
+	query = applyAnalyticsFilters(query, params, "")
 
 	err := query.Group("category").
 		Order("count DESC").
@@ -192,18 +188,16 @@ type DailyStat struct {
 func (r *AnalyticsRepository) GetDailyClicks(userID uuid.UUID, source, platform string, from, to time.Time) ([]DailyStat, error) {
 	var stats []DailyStat
 	query := r.db.Model(&models.LinkClick{}).
-		Select("TO_CHAR(clicked_at, 'YYYY-MM-DD') as date, COUNT(*) as count").
-		Where("user_id = ?", userID)
+		Select("TO_CHAR(clicked_at, 'YYYY-MM-DD') as date, COUNT(*) as count")
 
-	// Apply filters
-	query = applySourceFilter(query, "source", source)
-	query = applyPlatformFilter(query, "platform", platform)
-	if !from.IsZero() {
-		query = query.Where("clicked_at >= ?", from)
+	params := FilterParams{
+		UserID:   userID,
+		Source:   source,
+		Platform: platform,
+		From:     from,
+		To:       to,
 	}
-	if !to.IsZero() {
-		query = query.Where("clicked_at <= ?", to)
-	}
+	query = applyAnalyticsFilters(query, params, "")
 
 	err := query.Group("TO_CHAR(clicked_at, 'YYYY-MM-DD')").
 		Order("date ASC").
@@ -242,19 +236,18 @@ func (r *AnalyticsRepository) GetTimelineClicksByGroup(userID uuid.UUID, timeGro
 	}
 
 	query := r.db.Model(&models.LinkClick{}).
-		Select("TO_CHAR(clicked_at, '"+dateFormat+"') as date, "+groupColumn+" as \"group\", COUNT(*) as count").
-		Where("user_id = ? AND "+groupColumn+" != ''", userID)
+		Select("TO_CHAR(clicked_at, '" + dateFormat + "') as date, " + groupColumn + " as \"group\", COUNT(*) as count").
+		Where(groupColumn + " != ''")
 
-	// Apply filters
-	query = applySourceFilter(query, "source", source)
-	query = applyPlatformFilter(query, "platform", platform)
-	query = applyCategoryFilter(query, "category", category)
-	if !from.IsZero() {
-		query = query.Where("clicked_at >= ?", from)
+	params := FilterParams{
+		UserID:   userID,
+		Source:   source,
+		Platform: platform,
+		Category: category,
+		From:     from,
+		To:       to,
 	}
-	if !to.IsZero() {
-		query = query.Where("clicked_at <= ?", to)
-	}
+	query = applyAnalyticsFilters(query, params, "")
 
 	err := query.Group("TO_CHAR(clicked_at, '" + dateFormat + "'), " + groupColumn).
 		Order("date ASC, \"group\" ASC").
