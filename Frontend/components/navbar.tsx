@@ -1,72 +1,79 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { Menu, X } from "lucide-react"
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Menu, X } from "lucide-react";
 
 interface NavbarProps {
-  isLoggedIn?: boolean
+  isLoggedIn?: boolean;
 }
 
 export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn ?? false)
-  const [username, setUsername] = useState("")
-  const [userAvatar, setUserAvatar] = useState("")
+  const pathname = usePathname();
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(propIsLoggedIn ?? false);
+  const [username, setUsername] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
 
   useEffect(() => {
     // Check localStorage for auth state
-    const token = localStorage.getItem("token")
-    const userData = localStorage.getItem("user")
-    
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
     if (token && userData) {
-      setIsLoggedIn(true)
+      setIsLoggedIn(true);
       try {
-        const user = JSON.parse(userData)
-        setUsername(user.username || "")
-        setUserAvatar(user.avatar_url || "")
+        const user = JSON.parse(userData);
+        setUsername(user.username || "");
+        setUserAvatar(user.avatar_url || "");
       } catch {
-        setUsername("")
-        setUserAvatar("")
+        setUsername("");
+        setUserAvatar("");
       }
     } else {
-      setIsLoggedIn(propIsLoggedIn ?? false)
+      setIsLoggedIn(propIsLoggedIn ?? false);
     }
-  }, [propIsLoggedIn])
+  }, [propIsLoggedIn]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    setIsLoggedIn(false)
-    router.push("/")
-  }
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    router.push("/");
+  };
 
   const navLinks = isLoggedIn
     ? [
         { href: "/", label: "Home" },
-        { href: "/about", label: "About us" },
         { href: "/pricing", label: "Pricing" },
         { href: "/dashboard", label: "Dashboard" },
+        { href: "/about", label: "About us" },
       ]
     : [
         { href: "/", label: "Home" },
-        { href: "/about", label: "About us" },
         { href: "/pricing", label: "Pricing" },
-      ]
+        { href: "/about", label: "About us" },
+      ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background animate-fade-in">
       <div className="mx-auto max-w-6xl px-3 sm:px-4">
         <nav className="flex h-14 sm:h-16 items-center justify-between rounded-full border border-border bg-background px-4 sm:px-6 my-2 sm:my-4 shadow-sm transition-all duration-300 hover:shadow-md">
-          <Link href="/" className="flex items-center gap-1 transition-transform duration-300 hover:scale-105">
-            <span className="text-lg sm:text-xl font-semibold text-[#5DADE2]">One</span>
-            <span className="text-lg sm:text-xl font-semibold text-[#1a365d]">Dash</span>
+          <Link
+            href="/"
+            className="flex items-center gap-1 transition-transform duration-300 hover:scale-105"
+          >
+            <span className="text-lg sm:text-xl font-semibold text-[#5DADE2]">
+              One
+            </span>
+            <span className="text-lg sm:text-xl font-semibold text-[#1a365d]">
+              Dash
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -77,7 +84,9 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
                 href={link.href}
                 className={cn(
                   "text-sm font-medium transition-all duration-300 hover:text-[#5DADE2] relative group",
-                  pathname === link.href ? "text-[#1a365d] font-semibold" : "text-muted-foreground",
+                  pathname === link.href
+                    ? "text-[#1a365d] font-semibold"
+                    : "text-muted-foreground"
                 )}
               >
                 {link.label}
@@ -92,7 +101,20 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
               <>
                 <Link href="/profile">
                   <Avatar className="h-9 w-9 sm:h-10 sm:w-10 bg-[#E07B54] transition-all duration-300 hover:scale-110 hover:ring-4 hover:ring-[#E07B54]/30 cursor-pointer">
-                    {userAvatar && <AvatarImage src={userAvatar.startsWith('http') ? userAvatar : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${userAvatar}`} alt={username} className="object-cover" />}
+                    {userAvatar && (
+                      <AvatarImage
+                        src={
+                          userAvatar.startsWith("http")
+                            ? userAvatar
+                            : `${
+                                process.env.NEXT_PUBLIC_API_URL ||
+                                "http://localhost:3001"
+                              }${userAvatar}`
+                        }
+                        alt={username}
+                        className="object-cover"
+                      />
+                    )}
                     <AvatarFallback className="bg-[#E07B54] text-white font-semibold">
                       {username ? username.charAt(0).toUpperCase() : "U"}
                     </AvatarFallback>
@@ -135,7 +157,11 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
             className="md:hidden w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </button>
         </nav>
 
@@ -151,7 +177,7 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
                     "px-4 py-3 rounded-xl text-sm font-medium transition-all",
                     pathname === link.href
                       ? "bg-[#5DADE2]/10 text-[#5DADE2]"
-                      : "text-gray-600 hover:bg-gray-100 active:bg-gray-200",
+                      : "text-gray-600 hover:bg-gray-100 active:bg-gray-200"
                   )}
                 >
                   {link.label}
@@ -162,19 +188,41 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
 
               {isLoggedIn ? (
                 <div className="flex items-center justify-between px-4 py-2">
-                  <Link href="/profile" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-3"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Avatar className="h-10 w-10 bg-[#E07B54]">
-                      {userAvatar && <AvatarImage src={userAvatar.startsWith('http') ? userAvatar : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${userAvatar}`} alt={username} className="object-cover" />}
+                      {userAvatar && (
+                        <AvatarImage
+                          src={
+                            userAvatar.startsWith("http")
+                              ? userAvatar
+                              : `${
+                                  process.env.NEXT_PUBLIC_API_URL ||
+                                  "http://localhost:3001"
+                                }${userAvatar}`
+                          }
+                          alt={username}
+                          className="object-cover"
+                        />
+                      )}
                       <AvatarFallback className="bg-[#E07B54] text-white font-semibold">
                         {username ? username.charAt(0).toUpperCase() : "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-gray-900">{username || "Profile"}</span>
+                    <span className="font-medium text-gray-900">
+                      {username || "Profile"}
+                    </span>
                   </Link>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
                     className="border-[#E07B54] text-[#E07B54] bg-transparent"
                   >
                     Logout
@@ -182,10 +230,20 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <Link href="/register" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
-                    <Button className="w-full bg-[#E07B54] hover:bg-[#d06a44] text-white rounded-xl h-11">Sign Up</Button>
+                  <Link
+                    href="/register"
+                    className="flex-1"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Button className="w-full bg-[#E07B54] hover:bg-[#d06a44] text-white rounded-xl h-11">
+                      Sign Up
+                    </Button>
                   </Link>
-                  <Link href="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    href="/login"
+                    className="flex-1"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Button
                       variant="outline"
                       className="w-full border-[#E07B54] text-[#E07B54] rounded-xl h-11 bg-transparent"
@@ -200,5 +258,5 @@ export function Navbar({ isLoggedIn: propIsLoggedIn }: NavbarProps) {
         )}
       </div>
     </header>
-  )
+  );
 }

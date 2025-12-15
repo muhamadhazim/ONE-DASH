@@ -14,6 +14,8 @@ const nextConfig = {
         hostname: "**",
       },
     ],
+    // Allow loading images from localhost
+    unoptimized: true,
   },
 }
 
