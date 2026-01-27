@@ -29,6 +29,18 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
+	// Ensure upload directories exist
+	if err := os.MkdirAll("./uploads/avatars", 0755); err != nil {
+		log.Printf("⚠️  Warning: Failed to create avatars directory: %v", err)
+	} else {
+		log.Println("✅ Avatars directory ready")
+	}
+	if err := os.MkdirAll("./uploads/banners", 0755); err != nil {
+		log.Printf("⚠️  Warning: Failed to create banners directory: %v", err)
+	} else {
+		log.Println("✅ Banners directory ready")
+	}
+
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
 	contactRepo := repository.NewContactRepository(db)
