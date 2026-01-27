@@ -26,9 +26,8 @@ func InitDB() (*gorm.DB, error) {
 
 	// Build DSN with proper escaping for special characters
 	// Use UTC timezone for Railway compatibility
-	// CRITICAL: prefer_simple_protocol=true to disable server-side prepared statements for pooler
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=UTC prefer_simple_protocol=true",
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=UTC",
 		host, user, password, dbname, port,
 	)
 
