@@ -33,8 +33,8 @@ func InitDB() (*gorm.DB, error) {
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-		PrepareStmt: false, // Disable prepared statements for pooler compatibility
+		Logger:      logger.Default.LogMode(logger.Info),
+		PrepareStmt: true, // Keep enabled, but use statement_cache_mode=describe in DSN
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
