@@ -25,8 +25,9 @@ func InitDB() (*gorm.DB, error) {
 	log.Printf("Attempting to connect to database: host=%s port=%s user=%s dbname=%s", host, port, user, dbname)
 
 	// Build DSN with proper escaping for special characters
+	// Use UTC timezone for Railway compatibility
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=Asia/Jakarta",
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=UTC",
 		host, user, password, dbname, port,
 	)
 
