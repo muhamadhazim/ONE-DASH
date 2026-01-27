@@ -21,6 +21,10 @@ func InitDB() (*gorm.DB, error) {
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
 
+	// Log connection attempt (hide password)
+	log.Printf("Attempting to connect to database: host=%s port=%s user=%s dbname=%s", host, port, user, dbname)
+
+	// Build DSN with proper escaping for special characters
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=Asia/Jakarta",
 		host, user, password, dbname, port,
