@@ -33,24 +33,28 @@ func InitDB() (*gorm.DB, error) {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
+		PrepareStmt: false, // Disable prepared statements for pooler compatibility
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	// Drop table removed to prevent data loss
-
-	// Auto migrate models
-	if err := db.AutoMigrate(
-		&models.User{},
-		&models.Contact{},
-		&models.Link{},
-		&models.LinkClick{},
-		&models.PageView{},
-		&models.SocialClick{},
-		&models.CommissionRate{},
-	); err != nil {
-		return nil, fmt.Errorf("failed to migrate database: %w", err)
+	// Skip auto-migration if tables already exist (production safety)
+	// Run migrations manually via SQL scripts instead
+	env := os.Getenv("ENVIRONMENT")
+	if env != "production" {
+		// Auto migrate models (only in development)
+		if err := db.AutoMigrate(
+			&models.User{},
+			&models.Contact{},
+			&models.Link{},
+			&models.LinkClick{},
+			&models.PageView{},
+			&models.SocialClick{},
+			&models.CommissionRate{},
+		); err != nil {
+			return nil, fmt.Errorf("failed to migrate database: %w", err)
+		}
 	}
 
 	log.Println("✅ Database connected and migrated successfully")
