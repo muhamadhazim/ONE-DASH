@@ -3,6 +3,7 @@ package scraper
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -25,11 +26,17 @@ func (s *Service) scrapeBlibli(productURL string) (*ProductMetadata, error) {
 	}
 	defer resp.Body.Close()
 
+	// Log response status for debugging
+	log.Printf("[Blibli] HTTP Status: %d for URL: %s", resp.StatusCode, productURL)
+
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return &ProductMetadata{Platform: "blibli"}, nil
 	}
 	htmlContent := string(bodyBytes)
+
+	// Log content length for debugging
+	log.Printf("[Blibli] Response size: %d bytes", len(htmlContent))
 
 	// Try to extract from window.__PRODUCT_DETAIL_INITIAL_STATE__ JSON first
 	// This contains the most complete data for Blibli
