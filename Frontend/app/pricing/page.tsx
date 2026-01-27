@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -58,18 +59,23 @@ export default function PricingPage() {
               <p className="text-muted-foreground text-center mb-4 sm:mb-6 text-xs sm:text-sm">
                 Unlimited links and a customizable One Dash to connect your community to everything you are.
               </p>
-              <Button
-                variant="outline"
-                className="w-full h-11 sm:h-10 rounded-full border-[#4A7DFF] text-[#4A7DFF] hover:bg-[#4A7DFF]/10 bg-transparent text-sm active:scale-[0.98] transition-transform"
-              >
-                Join for free
-              </Button>
+              <Link href="/register">
+                <Button
+                  variant="outline"
+                  className="w-full h-11 sm:h-10 rounded-full border-[#4A7DFF] text-[#4A7DFF] hover:bg-[#4A7DFF]/10 bg-transparent text-sm active:scale-[0.98] transition-transform"
+                >
+                  Join for free
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
           {/* Starter Plan */}
-          <Card className="overflow-hidden border-2 border-[#22c55e] transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:scale-[0.98]">
-            <CardHeader className="bg-[#22c55e] text-white p-4 sm:p-6">
+          <Card className="overflow-hidden border-2 border-gray-300 opacity-75 transition-all duration-300 relative">
+            <div className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full z-10">
+              Coming Soon
+            </div>
+            <CardHeader className="bg-gray-400 text-white p-4 sm:p-6">
               <h3 className="text-xl sm:text-2xl font-bold">Starter</h3>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-3xl sm:text-4xl font-bold">${billingPeriod === "monthly" ? "5" : "4"}</span>
@@ -80,15 +86,21 @@ export default function PricingPage() {
               <p className="text-muted-foreground text-center mb-4 sm:mb-6 text-xs sm:text-sm">
                 More customization and control for creators ready to drive more traffic to their One Dash.
               </p>
-              <Button className="w-full h-11 sm:h-10 rounded-full bg-[#22c55e] hover:bg-[#16a34a] text-white text-sm active:scale-[0.98] transition-transform">
-                Get started
+              <Button 
+                disabled
+                className="w-full h-11 sm:h-10 rounded-full bg-gray-400 text-white text-sm cursor-not-allowed"
+              >
+                Coming Soon
               </Button>
             </CardContent>
           </Card>
 
           {/* Pro Plan */}
-          <Card className="overflow-hidden sm:col-span-2 md:col-span-1 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:scale-[0.98]">
-            <CardHeader className="bg-[#1a365d] text-white p-4 sm:p-6">
+          <Card className="overflow-hidden sm:col-span-2 md:col-span-1 border-2 border-gray-300 opacity-75 transition-all duration-300 relative">
+            <div className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full z-10">
+              Coming Soon
+            </div>
+            <CardHeader className="bg-gray-600 text-white p-4 sm:p-6">
               <h3 className="text-xl sm:text-2xl font-bold">Pro</h3>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-3xl sm:text-4xl font-bold">${billingPeriod === "monthly" ? "9" : "7"}</span>
@@ -100,10 +112,10 @@ export default function PricingPage() {
                 Grow, learn about and own your following forever with a professional One Dash.
               </p>
               <Button
-                variant="outline"
-                className="w-full h-11 sm:h-10 rounded-full border-[#1a365d] text-[#1a365d] hover:bg-[#1a365d]/10 bg-transparent text-sm active:scale-[0.98] transition-transform"
+                disabled
+                className="w-full h-11 sm:h-10 rounded-full bg-gray-400 text-white text-sm cursor-not-allowed"
               >
-                Try for free
+                Coming Soon
               </Button>
             </CardContent>
           </Card>

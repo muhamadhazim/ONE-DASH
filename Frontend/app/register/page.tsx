@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
@@ -11,6 +11,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
 export default function RegisterPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -19,6 +20,14 @@ export default function RegisterPage() {
     username: "",
     password: "",
   })
+
+  // Auto-fill username from query parameter
+  useEffect(() => {
+    const usernameParam = searchParams.get("username")
+    if (usernameParam) {
+      setFormData((prev) => ({ ...prev, username: usernameParam }))
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

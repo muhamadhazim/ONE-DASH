@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useScrollAnimation } from "@/hooks/use-scroll-animation"
@@ -8,6 +10,22 @@ import { cn } from "@/lib/utils"
 export function HeroSection() {
   const { ref: textRef, isVisible: textVisible } = useScrollAnimation()
   const { ref: imageRef, isVisible: imageVisible } = useScrollAnimation()
+  const [username, setUsername] = useState("")
+  const router = useRouter()
+
+  const handleClaim = () => {
+    if (username.trim()) {
+      router.push(`/register?username=${encodeURIComponent(username.trim())}`)
+    } else {
+      router.push("/register")
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleClaim()
+    }
+  }
 
   return (
     <section className="py-8 sm:py-16 md:py-24 overflow-hidden">
@@ -31,9 +49,15 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto md:mx-0">
               <Input
                 placeholder="onedash/yourname"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="h-12 sm:h-11 bg-gray-100 border-0 transition-all duration-300 hover:bg-gray-200 focus:scale-[1.02] focus:shadow-md text-sm"
               />
-              <Button className="h-12 sm:h-11 bg-[#1a365d] hover:bg-[#152a4d] text-white px-6 whitespace-nowrap transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 text-sm">
+              <Button 
+                onClick={handleClaim}
+                className="h-12 sm:h-11 bg-[#1a365d] hover:bg-[#152a4d] text-white px-6 whitespace-nowrap transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 text-sm"
+              >
                 Claim your One Dash
               </Button>
             </div>

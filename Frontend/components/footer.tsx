@@ -13,43 +13,43 @@ export function Footer() {
               <span className="text-lg sm:text-xl font-semibold text-white">Dash</span>
             </Link>
             <p className="text-xs sm:text-sm text-gray-400 max-w-xs">
-              Todos os direitos reservados. Veja nossa{" "}
+              All rights reserved. View our{" "}
               <Link href="#" className="underline hover:text-white transition-colors">
-                Política de privacidade
+                Privacy Policy
               </Link>{" "}
-              e{" "}
+              and{" "}
               <Link href="#" className="underline hover:text-white transition-colors">
-                Termos de Uso
+                Terms of Use
               </Link>
             </p>
           </div>
 
           {/* Links Column 1 */}
           <div className="flex flex-col gap-2">
-            <Link href="#" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
-              Funcionalidades
+            <Link href="/pricing" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
+              Features
             </Link>
-            <Link href="#" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
-              Preço
+            <Link href="/pricing" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
+              Pricing
             </Link>
-            <Link href="#" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
-              Documentação
+            <Link href="/about" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
+              About
             </Link>
           </div>
 
           {/* Links Column 2 */}
           <div className="flex flex-col gap-2">
             <Link href="#" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
-              Contato
+              Contact
             </Link>
             <Link href="#" className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors py-1">
-              Ajuda e suporte
+              Help & Support
             </Link>
           </div>
 
           {/* Social Links */}
           <div>
-            <span className="text-xs sm:text-sm text-gray-400 block mb-3 sm:mb-4">Siga-em</span>
+            <span className="text-xs sm:text-sm text-gray-400 block mb-3 sm:mb-4">Follow us</span>
             <div className="flex gap-4">
               <Link
                 href="#"
