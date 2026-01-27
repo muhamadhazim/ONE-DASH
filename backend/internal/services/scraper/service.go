@@ -86,7 +86,7 @@ func (s *Service) ScrapeProduct(productURL string) (*ProductMetadata, error) {
 		return s.scrapeTokopedia(productURL)
 	case "lazada":
 		return s.scrapeLazada(productURL)
-	case "tiktokshop":
+	case "tiktok_shop":
 		return s.scrapeTikTokShop(productURL)
 	case "blibli":
 		return s.scrapeBlibli(productURL)
@@ -97,7 +97,7 @@ func (s *Service) ScrapeProduct(productURL string) (*ProductMetadata, error) {
 
 func (s *Service) detectPlatform(productURL string) string {
 	if strings.Contains(productURL, "tiktok.com") || strings.Contains(productURL, "shop.tiktok") || strings.Contains(productURL, "shop-id.tokopedia.com") || strings.Contains(productURL, "vt.tokopedia.com") {
-		return "tiktokshop"
+		return "tiktok_shop"
 	}
 	if strings.Contains(productURL, "blibli.com") || strings.Contains(productURL, "blibli.onelink.me") {
 		return "blibli"

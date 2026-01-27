@@ -66,7 +66,7 @@ func detectPlatform(url string) string {
 	u := strings.ToLower(url)
 	// Check TikTok first because it might contain 'tokopedia' in domain (e.g. vt.tokopedia.com)
 	if strings.Contains(u, "tiktok") || strings.Contains(u, "vt.tokopedia.com") || strings.Contains(u, "shop-id.tokopedia.com") {
-		return "tiktokshop"
+		return "tiktok_shop"
 	}
 	if strings.Contains(u, "shopee") || strings.Contains(u, "shp.ee") {
 		return "shopee"

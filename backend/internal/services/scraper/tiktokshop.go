@@ -12,7 +12,7 @@ import (
 func (s *Service) scrapeTikTokShop(productURL string) (*ProductMetadata, error) {
 	req, err := http.NewRequest("GET", productURL, nil)
 	if err != nil {
-		return &ProductMetadata{Platform: "tiktokshop"}, nil
+		return &ProductMetadata{Platform: "tiktok_shop"}, nil
 	}
 
 	// Use WhatsApp User-Agent for server-side rendered HTML
@@ -21,13 +21,13 @@ func (s *Service) scrapeTikTokShop(productURL string) (*ProductMetadata, error) 
 
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return &ProductMetadata{Platform: "tiktokshop"}, nil
+		return &ProductMetadata{Platform: "tiktok_shop"}, nil
 	}
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return &ProductMetadata{Platform: "tiktokshop"}, nil
+		return &ProductMetadata{Platform: "tiktok_shop"}, nil
 	}
 	htmlContent := string(bodyBytes)
 
@@ -47,7 +47,7 @@ func (s *Service) scrapeTikTokShop(productURL string) (*ProductMetadata, error) 
 		Title:    title,
 		ImageURL: imageURL,
 		Price:    price,
-		Platform: "tiktokshop",
+		Platform: "tiktok_shop",
 		Category: category,
 		Sold:     sold,
 		Rating:   rating,
