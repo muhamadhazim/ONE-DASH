@@ -16,7 +16,8 @@ func (s *Service) scrapeTikTokShop(productURL string) (*ProductMetadata, error) 
 	}
 
 	// Use WhatsApp User-Agent for server-side rendered HTML
-	req.Header.Set("User-Agent", "WhatsApp/2.21.4.22 A")
+	// req.Header.Set("User-Agent", "WhatsApp/2.21.4.22 A")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36")
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 
 	resp, err := s.client.Do(req)
@@ -66,7 +67,7 @@ func (s *Service) extractTikTokPrice(htmlContent string) float64 {
 			return price
 		}
 	}
-	
+
 	re = regexp.MustCompile(`"priceCurrency"\s*:\s*"IDR"\s*,\s*"price"\s*:\s*(\d+)`)
 	if matches := re.FindStringSubmatch(htmlContent); len(matches) > 1 {
 		var price float64
@@ -77,7 +78,6 @@ func (s *Service) extractTikTokPrice(htmlContent string) float64 {
 	}
 
 	// Method 2: Any JSON-LD price pattern
-
 
 	// Method 3: Price span in HTML - <span>Rp330.000</span>
 	re = regexp.MustCompile(`<span>Rp\s*([0-9.,]+)</span>`)
