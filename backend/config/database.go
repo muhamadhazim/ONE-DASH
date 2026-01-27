@@ -24,16 +24,19 @@ func InitDB() (*gorm.DB, error) {
 	// Log connection attempt (hide password)
 	log.Printf("Attempting to connect to database: host=%s port=%s user=%s dbname=%s", host, port, user, dbname)
 
-	// Build DSN with proper escaping for special characters
-	// Use UTC timezone for Railway compatibility
+	// Build DSN - simple mode for transaction pooler compatibility
+	// CRITICAL: No prepared statements allowed with Supabase transaction pooler
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=UTC",
 		host, user, password, dbname, port,
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true, // Force simple protocol (no prepared statements)
+	}), &gorm.Config{
 		Logger:      logger.Default.LogMode(logger.Info),
-		PrepareStmt: false, // MUST be false for transaction pooler
+		PrepareStmt: false,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
