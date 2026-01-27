@@ -29,6 +29,10 @@ backend/temp/
 # Debug files
 backend/*_debug.html
 backend/*_debug.json
+backend/*.html
+backend/*_dump.json
+backend/debug_dumps/
+backend/database_scripts/
 
 # Uploads (jika tidak ingin commit file upload user)
 # backend/uploads/*
@@ -74,3 +78,18 @@ yarn-error.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# ========================
+# DOCUMENTATION & DIAGRAMS
+# ========================
+# Root level markdown documentation files
+/*.md
+!README.md
+# PlantUML diagrams and documentation
+plantuml/
+# Backup files
+*.backup
+# Documentation files in subdirectories
+backend/dokumentasi_api.md
+backend/setup_deploy.md
+Frontend/dokumentasi_frontend.md

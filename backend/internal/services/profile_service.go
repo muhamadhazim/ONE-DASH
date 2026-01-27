@@ -1,10 +1,12 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/onedash/backend/internal/models"
 	"github.com/onedash/backend/internal/repository"
@@ -19,14 +21,17 @@ func NewProfileService(userRepo *repository.UserRepository) *ProfileService {
 }
 
 type UpdateProfileInput struct {
-	Username    string  `json:"username"`
-	DisplayName string  `json:"display_name"`
-	Location    string  `json:"location"`
-	Bio         string  `json:"bio"`
-	BannerColor string  `json:"banner_color"`
-	Theme       string  `json:"theme"`
-	AvatarURL   *string `json:"avatar_url"`
-	BannerURL   *string `json:"banner_url"`
+	Username        string  `json:"username"`
+	Email           string  `json:"email"`
+	DisplayName     string  `json:"display_name"`
+	Location        string  `json:"location"`
+	Bio             string  `json:"bio"`
+	BannerColor     string  `json:"banner_color"`
+	Theme           string  `json:"theme"`
+	AvatarURL       *string `json:"avatar_url"`
+	BannerURL       *string `json:"banner_url"`
+	CurrentPassword string  `json:"current_password"`
+	NewPassword     string  `json:"new_password"`
 }
 
 func (s *ProfileService) GetProfile(userID uuid.UUID) (*models.User, error) {
@@ -37,6 +42,42 @@ func (s *ProfileService) UpdateProfile(userID uuid.UUID, input *UpdateProfileInp
 	user, err := s.userRepo.FindByID(userID)
 	if err != nil {
 		return nil, err
+	}
+
+	// Handle password change first (if both current and new password provided)
+	if input.CurrentPassword != "" && input.NewPassword != "" {
+		// Verify current password
+		if err := bcrypt.CompareHashAndPassword(
+			[]byte(user.PasswordHash),
+			[]byte(input.CurrentPassword),
+		); err != nil {
+			return nil, errors.New("password saat ini salah")
+		}
+
+		// Validate new password length
+		if len(input.NewPassword) < 6 {
+			return nil, errors.New("password baru minimal 6 karakter")
+		}
+
+		// Hash new password
+		hashedPassword, err := bcrypt.GenerateFromPassword(
+			[]byte(input.NewPassword),
+			bcrypt.DefaultCost,
+		)
+		if err != nil {
+			return nil, errors.New("failed to hash new password")
+		}
+
+		user.PasswordHash = string(hashedPassword)
+	}
+
+	// Check if email is being changed
+	if input.Email != "" && input.Email != user.Email {
+		// Check if new email already exists
+		if s.userRepo.ExistsByEmail(input.Email) {
+			return nil, fmt.Errorf("email '%s' sudah terdaftar", input.Email)
+		}
+		user.Email = input.Email
 	}
 
 	// Check if username is being changed
