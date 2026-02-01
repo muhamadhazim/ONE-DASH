@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ShoppingBag } from "lucide-react"
 import { getTheme } from "@/lib/themes"
 import { Profile, Product } from "./components/types"
@@ -19,8 +19,13 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [source, setSource] = useState("direct")
   const [visitorId, setVisitorId] = useState("")
+  const hasTrackedRef = useRef(false)
 
   useEffect(() => {
+    // Prevent double tracking in React Strict Mode
+    if (hasTrackedRef.current) return
+    hasTrackedRef.current = true
+    
     setMounted(true)
     
     // Get UTM source and visitor ID
@@ -71,7 +76,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
     } else if (process.env.NODE_ENV === 'development') {
       console.log('⏭️  Pageview skipped - viewing own profile')
     }
-  }, [])
+  }, [profile.userId, profile.username])
 
   // Track product click - non-blocking
   const trackProductClick = (link: Product) => {
