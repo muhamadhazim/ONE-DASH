@@ -27,21 +27,18 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
     const urlParams = new URLSearchParams(window.location.search)
     const utmSource = urlParams.get('utm_source') || 'direct'
     setSource(utmSource)
-    setVisitorId(getVisitorId())
+    const currentVisitorId = getVisitorId()
+    setVisitorId(currentVisitorId)
 
-    // Track page view only once per session (async, non-blocking)
-    const sessionKey = `pageview_tracked_${profile.userId}`
-    const alreadyTracked = sessionStorage.getItem(sessionKey)
-    
-    if (profile.userId && !alreadyTracked) {
+    // Track page view (backend will deduplicate within 1 hour)
+    if (profile.userId) {
       const trackData = {
         user_id: profile.userId,
-        visitor_id: getVisitorId(),
+        visitor_id: currentVisitorId,
         source: utmSource
       }
       const blob = new Blob([JSON.stringify(trackData)], { type: 'application/json' })
       navigator.sendBeacon?.(`${API_URL}/api/analytics/pageview`, blob)
-      sessionStorage.setItem(sessionKey, 'true')
     }
   }, [])
 
