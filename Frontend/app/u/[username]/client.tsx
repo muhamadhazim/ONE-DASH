@@ -29,8 +29,11 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
     setSource(utmSource)
     setVisitorId(getVisitorId())
 
-    // Track page view (async, non-blocking)
-    if (profile.userId) {
+    // Track page view only once per session (async, non-blocking)
+    const sessionKey = `pageview_tracked_${profile.userId}`
+    const alreadyTracked = sessionStorage.getItem(sessionKey)
+    
+    if (profile.userId && !alreadyTracked) {
       const trackData = {
         user_id: profile.userId,
         visitor_id: getVisitorId(),
@@ -38,6 +41,7 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
       }
       const blob = new Blob([JSON.stringify(trackData)], { type: 'application/json' })
       navigator.sendBeacon?.(`${API_URL}/api/analytics/pageview`, blob)
+      sessionStorage.setItem(sessionKey, 'true')
     }
   }, [])
 

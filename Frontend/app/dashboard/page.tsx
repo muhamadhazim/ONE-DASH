@@ -11,6 +11,7 @@ import { LinkGenerator } from "@/components/dashboard/link-generator"
 import { SocialStats } from "@/components/dashboard/social-stats"
 import { TopLinks } from "@/components/dashboard/top-links"
 import { TimelineAnalytics } from "@/components/dashboard/timeline-analytics"
+import { checkAuthAndLogout } from "@/lib/auth"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
@@ -77,13 +78,13 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
-    const userData = localStorage.getItem("user")
-    
-    if (!token) {
-      router.push("/login")
+    // Check if token exists and is valid
+    if (!checkAuthAndLogout(router)) {
       return
     }
+
+    const token = localStorage.getItem("token")!
+    const userData = localStorage.getItem("user")
 
     if (userData) {
       try {
