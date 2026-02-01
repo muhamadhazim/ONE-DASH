@@ -95,6 +95,7 @@ export default async function PublicProfilePage({
   // Transform API response to match client component props
   const profile = {
     userId: apiProfile.user_id,
+    username: apiProfile.username,
     name: apiProfile.name || apiProfile.username,
     location: apiProfile.location || "",
     bio: apiProfile.bio || "",

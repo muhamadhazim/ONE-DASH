@@ -39,6 +39,16 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
         const userData: { username?: string } = JSON.parse(loggedInUser)
         // Don't track if viewing own profile
         isOwnProfile = userData.username === profile.username
+        
+        // Debug log (remove in production)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔍 Pageview check:', {
+            loggedInUsername: userData.username,
+            profileUsername: profile.username,
+            isOwnProfile,
+            willTrack: !isOwnProfile
+          })
+        }
       } catch {
         // Invalid user data, continue tracking
       }
@@ -54,6 +64,12 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
       }
       const blob = new Blob([JSON.stringify(trackData)], { type: 'application/json' })
       navigator.sendBeacon?.(`${API_URL}/api/analytics/pageview`, blob)
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ Pageview tracked:', trackData)
+      }
+    } else if (process.env.NODE_ENV === 'development') {
+      console.log('⏭️  Pageview skipped - viewing own profile')
     }
   }, [])
 
