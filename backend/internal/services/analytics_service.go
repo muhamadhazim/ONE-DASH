@@ -98,16 +98,24 @@ func (s *AnalyticsService) TrackClick(linkID, userID uuid.UUID, visitorID, sourc
 }
 
 func (s *AnalyticsService) TrackPageView(userID uuid.UUID, visitorID, source, visitorIP, userAgent string) error {
+	// Skip tracking if visitor_id is empty (likely SSR or bot)
+	if visitorID == "" {
+		return nil
+	}
+	
+	// Skip tracking if user agent is 'node' (SSR or internal requests)
+	if userAgent == "node" || userAgent == "" {
+		return nil
+	}
+	
 	// Check for duplicate pageview within 1 hour
-	if visitorID != "" {
-		exists, err := s.analyticsRepo.CheckPageViewExists(visitorID, userID)
-		if err != nil {
-			return err
-		}
-		if exists {
-			// Skip tracking if same visitor viewed within last hour
-			return nil
-		}
+	exists, err := s.analyticsRepo.CheckPageViewExists(visitorID, userID)
+	if err != nil {
+		return err
+	}
+	if exists {
+		// Skip tracking if same visitor viewed within last hour
+		return nil
 	}
 
 	view := &models.PageView{
