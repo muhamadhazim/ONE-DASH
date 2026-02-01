@@ -30,8 +30,23 @@ export default function PublicProfileClient({ profile }: { profile: Profile }) {
     const currentVisitorId = getVisitorId()
     setVisitorId(currentVisitorId)
 
-    // Track page view (backend will deduplicate within 1 hour)
-    if (profile.userId) {
+    // Check if logged-in user is viewing their own profile
+    const loggedInUser = localStorage.getItem('user')
+    let isOwnProfile = false
+    
+    if (loggedInUser) {
+      try {
+        const userData: { username?: string } = JSON.parse(loggedInUser)
+        // Don't track if viewing own profile
+        isOwnProfile = userData.username === profile.username
+      } catch {
+        // Invalid user data, continue tracking
+      }
+    }
+
+    // Track page view only if NOT viewing own profile
+    // Backend will also deduplicate within 1 hour
+    if (profile.userId && !isOwnProfile) {
       const trackData = {
         user_id: profile.userId,
         visitor_id: currentVisitorId,

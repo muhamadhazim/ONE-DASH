@@ -16,6 +16,7 @@ export type Product = {
 
 export type Profile = {
   userId?: string
+  username?: string
   name: string
   location: string
   bio: string
