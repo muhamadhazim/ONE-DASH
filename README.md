@@ -1,7 +1,7 @@
 # ONE-DASH
 
 Dashboard analitik untuk affiliate marketing dengan fitur:
-- Multi-platform tracking (Shopee, Tokopedia, Lazada, Blibli)
+- Multi-platform tracking (Shopee, Tokopedia,Tiktokshop (soon) Lazada (soon), Blibli(soon))
 - UTM Source tracking
 - Smart Insights & Recommendations
 - Revenue Estimation
