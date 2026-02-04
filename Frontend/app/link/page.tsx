@@ -106,6 +106,25 @@ export default function LinkEditorPage() {
     try {
       const token = localStorage.getItem("token")
       
+      // Validate link lengths before saving
+      for (const link of links) {
+        if (link.title && link.title.length > 255) {
+          setMessage({ type: "error", text: "Link title cannot exceed 255 characters" })
+          setSaving(false)
+          return
+        }
+        if (link.subtitle && link.subtitle.length > 255) {
+          setMessage({ type: "error", text: "Link subtitle cannot exceed 255 characters" })
+          setSaving(false)
+          return
+        }
+        if (link.url && link.url.length > 1000) {
+          setMessage({ type: "error", text: "Link URL cannot exceed 1000 characters" })
+          setSaving(false)
+          return
+        }
+      }
+      
       await fetch(`${API_URL}/api/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },

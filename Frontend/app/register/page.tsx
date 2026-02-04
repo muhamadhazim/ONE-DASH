@@ -42,7 +42,29 @@ function RegisterForm() {
     setError("")
     setLoading(true)
 
-    // Validate
+    // Validate email format
+    if (!formData.email.includes("@")) {
+      setError("Email must contain @ symbol")
+      setLoading(false)
+      return
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!emailRegex.test(formData.email)) {
+      setError("Invalid email format")
+      setLoading(false)
+      return
+    }
+
+    // Validate username (alphanumeric only)
+    const usernameRegex = /^[a-zA-Z0-9]+$/
+    if (!usernameRegex.test(formData.username)) {
+      setError("Username can only contain letters and numbers")
+      setLoading(false)
+      return
+    }
+
+    // Validate password
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters")
       setLoading(false)

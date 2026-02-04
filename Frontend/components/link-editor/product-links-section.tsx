@@ -27,6 +27,19 @@ export function ProductLinksSection({ links, setLinks, onMessage, apiUrl }: Prod
     if (field === 'rating' || field === 'price' || field === 'sold' || field === 'original_price') {
       processedValue = value ? parseFloat(value) : 0
     }
+    
+    // Validate field lengths and show warning, but still allow update
+    if (field === 'title' && typeof value === 'string' && value.length > 255) {
+      onMessage({ type: "error", text: "Product name cannot exceed 255 characters" })
+    } else if (field === 'subtitle' && typeof value === 'string' && value.length > 255) {
+      onMessage({ type: "error", text: "Subtitle cannot exceed 255 characters" })
+    } else if (field === 'url' && typeof value === 'string' && value.length > 1000) {
+      onMessage({ type: "error", text: "URL cannot exceed 1000 characters" })
+    } else {
+      // Clear error message if within limit
+      onMessage({ type: "", text: "" })
+    }
+    
     setLinks(links.map((link, i) => (i === index ? { ...link, [field]: processedValue } : link)))
   }
 
